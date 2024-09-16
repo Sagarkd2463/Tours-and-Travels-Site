@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Button } from 'reactstrap';
+import { Container, Row } from 'reactstrap';
 import { NavLink, Link } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
@@ -48,13 +48,13 @@ const Header = () => {
 
             <div className="nav_right d-flex align-items-center gap-4">
               <div className="nav_btns d-flex align-items-center gap-4">
-                <Button className='btn secondary_btn'>
-                  <Link to={'/login'}>Login</Link>
-                </Button>
+                <button className='btn btn-warning border-0 rounded-2'>
+                  <Link to={'/login'} className='text-decoration-none text-white'>Login</Link>
+                </button>
 
-                <Button className='btn primary_btn'>
-                  <Link to={'/register'}>Register</Link>
-                </Button>
+                <button className='btn btn-primary border-0 rounded-2'>
+                  <Link to={'/register'} className='text-decoration-none text-white'>Register</Link>
+                </button>
               </div>
             </div>
 
