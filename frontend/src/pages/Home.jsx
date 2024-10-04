@@ -8,8 +8,11 @@ import '../styles/Home.css';
 import Subtitle from '../shared/Subtitle';
 import SearchBar from '../shared/SearchBar';
 import ServiceList from '../services/ServiceList';
-import FeaturedTourList from '../featured/FeaturedTourList';
+import FeaturedTourList from '../components/Featured/FeaturedTourList';
 import experienceImg from '../assets/images/experience.png';
+import MasonryImagesGallery from '../components/Gallery/MasonryImagesGallery';
+import Testimonials from '../components/Testimonials/Testimonials';
+import Newsletter from '../shared/Newsletter';
 
 const Home = () => {
     return (
@@ -124,20 +127,38 @@ const Home = () => {
                 </Container>
             </section>
 
-            <Container>
-                <Row>
-                    <Col lg='12'>
-                        <Subtitle subtitle={'Gallery'} />
-                        <h2 className="gallery__title">
-                            Visit our customers tour gallery
-                        </h2>
-                    </Col>
+            <section>
+                <Container>
+                    <Row>
+                        <Col lg='12'>
+                            <Subtitle subtitle={'Gallery'} />
+                            <h2 className="gallery__title">
+                                Visit our customers tour gallery
+                            </h2>
+                        </Col>
 
-                    <Col lg='12'>
+                        <Col lg='12'>
+                            <MasonryImagesGallery />
+                        </Col>
+                    </Row>
+                </Container>
+            </section>
 
-                    </Col>
-                </Row>
-            </Container>
+            <section>
+                <Container>
+                    <Row>
+                        <Col lg='12'>
+                            <Subtitle subtitle={'Fans Love'} />
+                            <h2 className="testimonial__title">What our fans say about us</h2>
+                        </Col>
+                        <Col lg='12'>
+                            <Testimonials />
+                        </Col>
+                    </Row>
+                </Container>
+            </section>
+
+            <Newsletter />
         </>
     );
 };
