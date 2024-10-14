@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Col, Row, Button, Form, FormGroup } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import registerImg from '../assets/images/register.png';
