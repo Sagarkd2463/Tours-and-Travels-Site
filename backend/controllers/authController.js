@@ -7,7 +7,7 @@ const register = async (req, res) => {
     try {
 
         const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+        const hashedPassword = await bcrypt.hashSync(req.body.password, salt);
 
         const newUser = new User({
             username: req.body.username,
@@ -47,7 +47,7 @@ const login = async (req, res) => {
             });
         }
 
-        const checkPassword = bcrypt.compareSync(req.body.password, user.password);
+        const checkPassword = await bcrypt.compareSync(req.body.password, user.password);
 
         if (!checkPassword) {
             return res.status(401).json({
@@ -74,6 +74,7 @@ const login = async (req, res) => {
             .json({
                 success: true,
                 message: 'Successfully logged in...',
+                role,
                 data: { ...info }
             });
 

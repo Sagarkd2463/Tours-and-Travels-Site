@@ -10,10 +10,15 @@ const
         getFeaturedTour,
         getTourCount
     } = require('./../controllers/tourController');
+const { verifyAdmin } = require('../utils/verifyToken');
 
 const router = express.Router();
 
-router.post('/', createTour);
+router.post('/', verifyAdmin, createTour);
+
+router.put('/:id', verifyAdmin, updateTour);
+
+router.delete('/:id', verifyAdmin, deleteTour);
 
 router.get('/:id', getSingleTour);
 
@@ -25,8 +30,5 @@ router.get('/search/getTourByFeatured', getFeaturedTour);
 
 router.get('/search/getTourCount', getTourCount);
 
-router.put('/:id', updateTour);
-
-router.delete('/:id', deleteTour);
 
 module.exports = router;

@@ -8,15 +8,24 @@ const cookieParser = require('cookie-parser');
 const tourRoute = require('./routes/tours');
 const userRoute = require('./routes/user');
 const authRoute = require('./routes/authUser');
+const reviewRoute = require('./routes/reviews');
+const bookingRoute = require('./routes/booking');
 
 const app = express();
 
-app.use(express.json());
-app.use('/auth', authRoute);
-app.use('/tours', tourRoute);
-app.use('/users', userRoute);
+const corsOptions = {
+    origin: true,
+    credential: true,
+};
 
-app.use(cors());
+app.use(express.json());
+app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/tours', tourRoute);
+app.use('/api/v1/users', userRoute);
+app.use('/api/v1/review', reviewRoute);
+app.use('/api/v1/booking', bookingRoute);
+
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 const PORT = process.env.PORT || 8000;
