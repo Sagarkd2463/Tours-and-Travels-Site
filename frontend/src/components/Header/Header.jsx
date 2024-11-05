@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { Container, Row } from 'reactstrap';
-import { NavLink, Link } from 'react-router-dom';
+import React, { useContext, useEffect, useRef } from 'react';
+import { Button, Container, Row } from 'reactstrap';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
+import { AuthContext } from './../../context/AuthContext';
 
 const nav_links = [
   {
@@ -23,6 +24,13 @@ const nav_links = [
 const Header = () => {
 
   const headerRef = useRef(null);
+  const navigate = useNavigate();
+  const { user, dispatch } = useContext(AuthContext);
+
+  const logout = () => {
+    dispatch({ type: 'LOGOUT' });
+    navigate('/');
+  };
 
   const stickyHeaderFunc = () => {
     window.addEventListener('scroll', () => {
@@ -67,20 +75,28 @@ const Header = () => {
 
             <div className="nav_right d-flex align-items-center gap-4">
               <div className="nav_btns d-flex align-items-center gap-4">
-                <button className='btn btn-warning border-0 rounded-2'>
-                  <Link to={'/login'} className='text-decoration-none text-white'>Login</Link>
-                </button>
+                {
+                  user ? (
+                    <>
+                      <h5 className='mb-0'>{user.username}</h5>
+                      <Button className='btn btn-danger text-white' onClick={logout}>Logout</Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button className='btn btn-warning border-0 rounded-2'>
+                        <Link to={'/login'} className='text-decoration-none text-white'>Login</Link>
+                      </Button>
 
-                <button className='btn btn-primary border-0 rounded-2'>
-                  <Link to={'/register'} className='text-decoration-none text-white'>Register</Link>
-                </button>
+                      <Button className='btn btn-primary border-0 rounded-2'>
+                        <Link to={'/register'} className='text-decoration-none text-white'>Register</Link>
+                      </Button>
+                    </>
+                  )}
               </div>
+              <span className="mobile_menu">
+                <i className="ri-menu-line"></i>
+              </span>
             </div>
-
-            <span className="mobile_menu">
-              <i className="ri-menu-line"></i>
-            </span>
-
           </div>
         </Row>
       </Container>
