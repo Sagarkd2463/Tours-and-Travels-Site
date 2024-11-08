@@ -6,7 +6,7 @@ import './index.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "remixicon/fonts/remixicon.css";
-import { AuthContextProvider } from './context/AuthContext.js';
+import { AuthContextProvider } from './context/AuthContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

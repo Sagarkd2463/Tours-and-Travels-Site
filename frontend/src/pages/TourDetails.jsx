@@ -37,7 +37,7 @@ const TourDetails = () => {
             }
 
             const reviewObj = {
-                username: user.username,
+                username: user?.username,
                 reviewText,
                 rating: tourRating
             }
@@ -52,6 +52,10 @@ const TourDetails = () => {
             });
 
             const result = await res.json();
+
+            if (!res.ok) {
+                return alert(result.message);
+            }
             alert(result.message);
         } catch (error) {
             alert(err.message);
@@ -152,15 +156,16 @@ const TourDetails = () => {
                                                         <div className='w-100'>
                                                             <div className='d-flex align-items-center justify-content-between'>
                                                                 <div>
-                                                                    <h5>muhib</h5>
-                                                                    <p>{new Date("02-05-2024").toLocaleDateString("en-US", options)}</p>
+                                                                    <h5>{review.username}</h5>
+                                                                    <p>{new Date(review.createdAt).toLocaleDateString("en-US", options)}</p>
                                                                 </div>
                                                                 <span className='d-flex align-items-center'>
-                                                                    5 <i className='ri-star-s-fill'></i>
+                                                                    {review.rating}
+                                                                    <i className='ri-star-s-fill'></i>
                                                                 </span>
                                                             </div>
 
-                                                            <h6>Amazing tour</h6>
+                                                            <h6>{review.reviewText}</h6>
                                                         </div>
                                                     </div>
                                                 ))
