@@ -16,6 +16,27 @@
     text-decoration: none;
     color: var(--heading-color);
     font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.social__links span a .ri-youtube-line {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+    color: rgb(242, 6, 6);
+}
+
+.social__links span a .ri-github-fill {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+    color: rgb(16, 14, 14);
+}
+
+.social__links span a .ri-facebook-circle-line {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+    color: rgb(10, 10, 236);
+}
+
+.social__links span a .ri-instagram-line {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+    color: rgb(231, 81, 106);
 }
 
 .footer__link-title {
@@ -25,6 +46,12 @@
 
 .footer__quick-links li a {
     text-decoration: none;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.footer__quick-links li a:hover {
+    text-decoration: underline;
     color: var(--text-color);
     font-size: 1.1rem;
 }

@@ -6,6 +6,7 @@ import '../styles/Register.css';
 import userIcon from '../assets/images/user.png';
 import { AuthContext } from './../context/AuthContext';
 import { BASE_URL } from './../utils/config';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Register = () => {
 
@@ -39,12 +40,15 @@ const Register = () => {
 
             const result = await res.json();
 
-            if (!res.ok) alert(result.message);
-
-            dispatch({ type: 'REGISTER_SUCCESS' });
-            navigate('/login');
+            if (!res.ok) {
+                toast.error(result.message);
+            } else {
+                toast.success("Registration successful!");
+                dispatch({ type: 'REGISTER_SUCCESS' });
+                navigate('/login');
+            }
         } catch (error) {
-            alert(error.message);
+            toast.error(error.message);
         }
     };
 
@@ -107,6 +111,8 @@ const Register = () => {
                     </Col>
                 </Row>
             </Container>
+
+            <ToastContainer />
         </section>
     );
 };

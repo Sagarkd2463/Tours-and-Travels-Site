@@ -6,6 +6,7 @@ import loginImg from '../assets/images/login.png';
 import userIcon from '../assets/images/user.png';
 import { AuthContext } from './../context/AuthContext';
 import { BASE_URL } from './../utils/config';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Login = () => {
 
@@ -41,11 +42,15 @@ const Login = () => {
 
             const result = await res.json();
 
-            if (!res.ok) alert(result.message);
-
-            dispatch({ type: 'LOGIN_SUCCESS', payload: result.data });
-            navigate('/');
+            if (!res.ok) {
+                toast.error(result.message);
+            } else {
+                toast.success("Login successful!");
+                dispatch({ type: 'LOGIN_SUCCESS', payload: result.data });
+                navigate('/');
+            }
         } catch (error) {
+            toast.error(error.message);
             dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
         }
     };
@@ -100,6 +105,8 @@ const Login = () => {
                     </Col>
                 </Row>
             </Container>
+
+            <ToastContainer />
         </section>
     );
 };

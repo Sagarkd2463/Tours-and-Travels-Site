@@ -155,11 +155,18 @@ const getTourBySearch = async (req, res) => {
 };
 
 const getFeaturedTour = async (req, res) => {
-
     try {
         const getFeatured = await Tour.find({ featured: true })
             .populate('reviews')
             .limit(8);
+
+        if (!getFeatured || getFeatured.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No featured tours found',
+                data: [],
+            });
+        }
 
         res.status(200).json({
             success: true,
@@ -168,10 +175,10 @@ const getFeaturedTour = async (req, res) => {
             data: getFeatured,
         });
     } catch (err) {
-        res.status(404).json({
+        res.status(500).json({
             success: false,
-            message: 'Could not fetch all your featured tours!',
-            data: err.message,
+            message: 'An error occurred while fetching featured tours',
+            error: err.message,
         });
     }
 };

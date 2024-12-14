@@ -14,19 +14,20 @@ const bookingRoute = require('./routes/booking');
 const app = express();
 
 const corsOptions = {
-    origin: true,
-    credential: true,
+    origin: 'http://localhost:5173', // Your frontend's URL
+    credentials: true,
 };
 
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
+
+// Routes
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/review', reviewRoute);
 app.use('/api/v1/booking', bookingRoute);
-
-app.use(cors(corsOptions));
-app.use(cookieParser());
 
 const PORT = process.env.PORT || 8000;
 

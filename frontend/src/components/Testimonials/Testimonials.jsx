@@ -5,6 +5,11 @@ import ava02Img from '../../assets/images/ava-2.jpg';
 import ava03Img from '../../assets/images/ava-3.jpg';
 
 const Testimonials = () => {
+    const testimonials = [
+        { text: "Great service!", name: "John Doe", image: ava01Img },
+        { text: "Amazing experience!", name: "Lia Franklin", image: ava02Img },
+        { text: "Highly recommend!", name: "Mark Smith", image: ava03Img },
+    ];
 
     const settings = {
         dots: true,
@@ -13,8 +18,8 @@ const Testimonials = () => {
         speed: 1000,
         swipeToSlide: true,
         autoplaySpeed: 2000,
+        pauseOnHover: true,
         slidesToShow: 3,
-
         responsive: [
             {
                 breakpoint: 992,
@@ -32,112 +37,23 @@ const Testimonials = () => {
                     slidesToScroll: 1,
                 },
             },
-        ]
+        ],
     };
 
     return (
         <Slider {...settings}>
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava01Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>John Doe</h6>
-                        <p>Customer</p>
+            {testimonials.map((item, index) => (
+                <div className="testimonial py-4 px-3" key={index}>
+                    <p>{item.text}</p>
+                    <div className="d-flex align-items-center gap-4 mt-3">
+                        <img src={item.image} className="w-25 h-25 rounded-2" alt={item.name} />
+                        <div>
+                            <h6 className="mb-0 mt-3">{item.name}</h6>
+                            <p>Customer</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava02Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>Lia Franklin</h6>
-                        <p>Customer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava03Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>John Doe</h6>
-                        <p>Customer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava03Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>John Doe</h6>
-                        <p>Customer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava03Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>John Doe</h6>
-                        <p>Customer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="testimonial py-4 px-3">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsam, facilis tempore magnam laudantium facere sunt,
-                    neque fugiat expedita saepe ex, consectetur nemo sequi debitis adipisci accusantium possimus modi eligendi? Inventore.
-                    Sapiente iure cumque incidunt unde dicta expedita iusto omnis aliquid amet quae. Pariatur optio numquam esse dolorem,
-                    expedita temporibus soluta autem, quam cumque eum assumenda magnam dicta praesentium! Illum, magni.
-                </p>
-
-                <div className='d-flex align-items-center gap-4 mt-3'>
-                    <img src={ava03Img} className='w-25 h-25 rounded-2' alt="" />
-                    <div>
-                        <h6 className='mb-0 mt-3'>John Doe</h6>
-                        <p>Customer</p>
-                    </div>
-                </div>
-            </div>
+            ))}
         </Slider>
     );
 };

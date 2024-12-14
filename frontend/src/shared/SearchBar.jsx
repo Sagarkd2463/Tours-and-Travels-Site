@@ -3,6 +3,7 @@ import { Col, Form, FormGroup } from 'reactstrap';
 import '../styles/Search-bar.css';
 import { BASE_URL } from './../utils/config';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 const SearchBar = () => {
 
@@ -18,16 +19,24 @@ const SearchBar = () => {
         const maxGroupSize = maxGroupSizeRef.current.value;
 
         if (location === "" || distance === "" || maxGroupSize === "") {
-            return alert("All fields are required!!");
+            toast.error("All fields are required!");
+            return;
         }
 
-        const res = await fetch(`${BASE_URL}/tours/search/getTourBySearch?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`);
+        try {
+            const res = await fetch(`${BASE_URL}/tours/search/getTourBySearch?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`);
 
-        if (!res.ok) alert('Something went wrong');
+            if (!res.ok) {
+                toast.error('Something went wrong');
+                return;
+            }
 
-        const result = await res.json();
+            const result = await res.json();
 
-        navigate(`/tours/search?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`, { state: result.data });
+            navigate(`/tours/search?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`, { state: result.data });
+        } catch (error) {
+            toast.error(error.message);
+        }
     };
 
     return (
@@ -58,11 +67,13 @@ const SearchBar = () => {
                         </div>
                     </FormGroup>
 
-                    <span className="search__icon" typeof='submit' onClick={searchHandler}>
+                    <span className="search__icon" onClick={searchHandler}>
                         <i className='ri-search-line'></i>
                     </span>
                 </Form>
             </div>
+
+            <ToastContainer />
         </Col>
     );
 };

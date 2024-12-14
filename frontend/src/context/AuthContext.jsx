@@ -2,7 +2,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import { authCases } from './constants';
 
 const initialState = {
-    user: localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null,
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
     loading: false,
     error: null,
 };
@@ -10,7 +10,7 @@ const initialState = {
 export const AuthContext = createContext(initialState);
 
 const AuthReducer = (state, action) => {
-    switch (state, action) {
+    switch (action.type) {
         case authCases.LOGIN_START:
             return {
                 user: null,
@@ -52,14 +52,22 @@ const AuthReducer = (state, action) => {
 };
 
 export const AuthContextProvider = ({ children }) => {
-
     const [state, dispatch] = useReducer(AuthReducer, initialState);
 
     useEffect(() => {
         localStorage.setItem('user', JSON.stringify(state.user));
     }, [state.user]);
 
-    return <AuthContext.Provider value={{ user: state.user, loading: state.loading, error: state.error, dispatch }}>
-        {children}
-    </AuthContext.Provider>
+    return (
+        <AuthContext.Provider
+            value={{
+                user: state.user,
+                loading: state.loading,
+                error: state.error,
+                dispatch,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 };
