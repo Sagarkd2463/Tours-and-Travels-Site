@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-    const token = req.cookies.accessToken;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1] || req.cookies.accessToken;
 
     if (!token) {
         return res.status(401).json({
@@ -12,20 +13,23 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
         if (err) {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
-                message: "Your token is invalid!",
+                message: "Invalid token!",
             });
         }
 
-        req.user = user;
+        console.log("Decoded User:", user);
+        req.user = user; // Attach user payload to req
         next();
     });
 };
 
 const verifyUser = (req, res, next) => {
-    verifyToken(req, res, next, () => {
-        if (req.user.id === req.params.id || req.user.role === "admin") {
+    verifyToken(req, res, () => {
+        console.log("Authenticated User:", req.user);
+
+        if (req.user.id || req.user.role === "admin") {
             next();
         } else {
             return res.status(401).json({
@@ -37,20 +41,16 @@ const verifyUser = (req, res, next) => {
 };
 
 const verifyAdmin = (req, res, next) => {
-    verifyToken(req, res, next, () => {
+    verifyToken(req, res, () => {
         if (req.user.role === "admin") {
             next();
         } else {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
-                message: "You're not authorized!",
+                message: "Admin access only!",
             });
         }
     });
 };
 
-module.exports = {
-    verifyToken,
-    verifyUser,
-    verifyAdmin
-};
+module.exports = { verifyToken, verifyUser, verifyAdmin };

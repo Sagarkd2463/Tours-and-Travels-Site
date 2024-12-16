@@ -33,11 +33,9 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-
     const email = req.body.email;
 
     try {
-
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -47,7 +45,7 @@ const login = async (req, res) => {
             });
         }
 
-        const checkPassword = await bcrypt.compareSync(req.body.password, user.password);
+        const checkPassword = await bcrypt.compare(req.body.password, user.password);
 
         if (!checkPassword) {
             return res.status(401).json({
@@ -65,15 +63,15 @@ const login = async (req, res) => {
             expiresIn: '15d'
         });
 
-        res
-            .cookie('accessToken', token, {
-                httpOnly: true,
-                expires: token.expiresIn
-            })
+        res.cookie('accessToken', token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+        })
             .status(200)
             .json({
                 success: true,
                 message: 'Successfully logged in...',
+                token,
                 role,
                 data: { ...info }
             });

@@ -4,109 +4,117 @@ import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Booking = ({ tour, avgRating }) => {
-
     const { price, reviews, title } = tour;
     const navigate = useNavigate();
-
     const { user } = useContext(AuthContext);
 
     const [booking, setBooking] = useState({
-        userId: user && user._id,
-        userEmail: user && user.email,
+        userId: user ? user._id : null,
+        userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
         guestSize: 1,
-        bookAt: '',
+        bookedAt: '',
     });
 
     const handleChange = (e) => {
+        const { id, value, type } = e.target;
         setBooking((prev) => ({
             ...prev,
-            [e.target.id]: e.target.value
+            [id]: type === "date" ? new Date(value).toISOString() : value,
         }));
     };
 
     const serviceFee = 10;
-    const totalAmount = Number(price) * Number(booking.guestSize) + Number(serviceFee);
+    const totalAmount = Number(price) * Number(booking.guestSize) + serviceFee;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            if (!user || user === undefined || user === null) {
-                return alert("Please sign in!")
-            }
+        if (!user) {
+            return toast.error("Please sign in to make a booking.");
+        }
 
+        if (!booking.bookedAt || isNaN(new Date(booking.bookedAt).getTime())) {
+            return toast.error("Please select a valid date!");
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
             const res = await fetch(`${BASE_URL}/booking`, {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`
                 },
-                credentials: 'include',
                 body: JSON.stringify(booking),
             });
 
             const result = await res.json();
-
             if (!res.ok) {
-                return alert(result.message);
+                return toast.error(result.message || "Failed to make the booking.");
             }
 
-            navigate('/thank-you');
+            toast.success("Booking successful! Redirecting...");
+            setTimeout(() => navigate('/thank-you'), 3000);
         } catch (error) {
-            alert(error.message);
+            console.error("Booking Error:", error);
+            toast.error("An error occurred while making the booking.");
         }
     };
 
     return (
         <div className='booking'>
+            <ToastContainer />
             <div className="booking__top d-flex align-items-center justify-content-between">
-                <h3>${price} <span>/per person</span> </h3>
-
+                <h3>${price} <span>/per person</span></h3>
                 <span className="tour__rating d-flex align-items-center">
                     <i className="ri-star-fill"></i>
-                    {avgRating === 0 ? null : avgRating} ({reviews?.length})
+                    {avgRating || 0} ({reviews?.length || 0})
                 </span>
             </div>
 
             <div className="booking__form">
                 <h5>Information</h5>
-                <Form className='booking__info-form' onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit}>
                     <FormGroup>
                         <input
                             type="text"
                             placeholder='Full Name'
                             id='fullName'
                             onChange={handleChange}
-                            required />
+                            required
+                        />
                     </FormGroup>
-
                     <FormGroup>
                         <input
                             type="number"
                             placeholder='Phone'
                             id='phone'
                             onChange={handleChange}
-                            required />
+                            required
+                        />
                     </FormGroup>
-
                     <FormGroup className='d-flex align-items-center gap-3'>
                         <input
                             type="date"
-                            placeholder=''
-                            id='bookAt'
+                            id='bookedAt'
                             onChange={handleChange}
-                            required />
-
+                            required
+                        />
                         <input
                             type="number"
-                            placeholder='Guest'
+                            placeholder='Guests'
                             id='guestSize'
                             onChange={handleChange}
-                            required />
+                            required
+                        />
                     </FormGroup>
                 </Form>
             </div>
@@ -115,27 +123,19 @@ const Booking = ({ tour, avgRating }) => {
                 <ListGroup>
                     <ListGroupItem className='border-0 px-0'>
                         <h5 className='d-flex align-items-center gap-1'>
-                            ${price} <i className='ri-close-line'></i>
-                            1 person
+                            ${price} <i className='ri-close-line'></i> {booking.guestSize} person(s)
                         </h5>
-                        <span> ${price}</span>
+                        <span>${price * booking.guestSize}</span>
                     </ListGroupItem>
-
                     <ListGroupItem className='border-0 px-0'>
-                        <h5>
-                            Service charge
-                        </h5>
-                        <span> ${serviceFee}</span>
+                        <h5>Service Fee</h5>
+                        <span>${serviceFee}</span>
                     </ListGroupItem>
-
                     <ListGroupItem className='border-0 px-0 total'>
-                        <h5>
-                            Total
-                        </h5>
-                        <span> ${totalAmount}</span>
+                        <h5>Total</h5>
+                        <span>${totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
-
                 <Button className='btn primary__btn w-100 mt-4' onClick={handleSubmit}>
                     Book Now
                 </Button>

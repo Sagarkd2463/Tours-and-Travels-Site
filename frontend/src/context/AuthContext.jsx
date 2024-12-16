@@ -13,7 +13,7 @@ const AuthReducer = (state, action) => {
     switch (action.type) {
         case authCases.LOGIN_START:
             return {
-                user: null,
+                ...state,
                 loading: true,
                 error: null,
             };
@@ -27,19 +27,20 @@ const AuthReducer = (state, action) => {
 
         case authCases.LOGIN_FAILURE:
             return {
-                user: null,
+                ...state,
                 loading: false,
                 error: action.payload,
             };
 
         case authCases.REGISTER_SUCCESS:
             return {
-                user: null,
+                ...state,
                 loading: false,
                 error: null,
             };
 
         case authCases.LOGOUT:
+            localStorage.removeItem('user');
             return {
                 user: null,
                 loading: false,
@@ -51,11 +52,16 @@ const AuthReducer = (state, action) => {
     }
 };
 
+
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
 
     useEffect(() => {
-        localStorage.setItem('user', JSON.stringify(state.user));
+        if (state.user) {
+            localStorage.setItem('user', JSON.stringify(state.user));
+        } else {
+            localStorage.removeItem('user');
+        }
     }, [state.user]);
 
     return (
