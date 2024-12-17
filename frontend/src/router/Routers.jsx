@@ -7,6 +7,8 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import SearchResultList from '../pages/SearchResultList';
 import ThankYou from '../pages/ThankYou';
+import UserBookings from '../components/Booking/UserBookings';
+import SingleBooking from '../components/Booking/SingleBooking';
 
 const Routers = () => {
     return (
@@ -19,6 +21,8 @@ const Routers = () => {
             <Route path='/register' element={<Register />} />
             <Route path='/tours/search' element={<SearchResultList />} />
             <Route path='/thank-you' element={<ThankYou />} />
+            <Route path="/bookings" element={<UserBookings />} />
+            <Route path="/booking/:id" element={<SingleBooking />} />
         </Routes>
     );
 };

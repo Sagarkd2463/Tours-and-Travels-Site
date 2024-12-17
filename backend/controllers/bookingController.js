@@ -67,20 +67,27 @@ const getBooking = (req, res) => {
 };
 
 const getAllBooking = async (req, res) => {
-
     try {
-        const allBookings = await Booking.find();
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized access. Please sign in to view your bookings.",
+            });
+        }
+
+        // Fetch all bookings for the signed-in user
+        const userBookings = await Booking.find({ userId: req.user._id });
 
         res.status(200).json({
             success: true,
-            message: "Successfully fetched all your booked tours!",
-            data: allBookings,
+            message: "Successfully fetched your booked tours!",
+            data: userBookings,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Failed to get all your booked tours!",
-            data: error.message,
+            message: "Failed to fetch your bookings.",
+            error: error.message,
         });
     }
 };
@@ -89,4 +96,4 @@ module.exports = {
     createBooking,
     getBooking,
     getAllBooking
-}
+};

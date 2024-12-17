@@ -29,7 +29,7 @@ const verifyUser = (req, res, next) => {
     verifyToken(req, res, () => {
         console.log("Authenticated User:", req.user);
 
-        if (req.user.id || req.user.role === "admin") {
+        if (req.user.id) {
             next();
         } else {
             return res.status(401).json({
