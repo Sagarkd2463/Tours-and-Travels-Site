@@ -1,0 +1,25 @@
+.container {
+    max-width: 650px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    color: #faa935;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #495057;
+}
+
+.text-muted {
+    font-weight: bold;
+}

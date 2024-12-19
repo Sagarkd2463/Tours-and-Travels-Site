@@ -1,0 +1,15 @@
+.card {
+    transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-weight: 700;
+}
+
+.border-custom {
+    border: 1px solid #ff7e01 !important;
+}

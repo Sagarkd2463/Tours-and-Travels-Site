@@ -33,50 +33,52 @@ const createBooking = async (req, res) => {
     }
 };
 
-const getBooking = (req, res) => {
-    console.log("Params in getBooking:", req.params);
-    const bookingId = req.params.id;
+const getBooking = async (req, res) => {
+    try {
+        const bookingId = req.params.id;
 
-    if (!bookingId) {
-        return res.status(400).json({
+        if (!bookingId) {
+            return res.status(400).json({
+                success: false,
+                message: "Booking ID is required!",
+            });
+        }
+
+        // Fetch the booking and populate the user's email
+        const booking = await Booking.findById(bookingId).populate('userId', 'email');
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                message: "Booking not found!",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: booking,
+        });
+    } catch (error) {
+        res.status(500).json({
             success: false,
-            message: "Booking ID is required!",
+            message: "Failed to retrieve booking!",
+            error: error.message,
         });
     }
-
-    Booking.findById(bookingId)
-        .then((booking) => {
-            if (!booking) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Booking not found!",
-                });
-            }
-            res.status(200).json({
-                success: true,
-                data: booking,
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                success: false,
-                message: "Failed to retrieve booking!",
-                error: err.message,
-            });
-        });
 };
 
 const getAllBooking = async (req, res) => {
     try {
-        if (!req.user || !req.user._id) {
+        if (!req.user && (!req.user.id || !req.user._id)) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        // Fetch all bookings for the signed-in user
-        const userBookings = await Booking.find({ userId: req.user._id });
+        // Fetch all bookings and populate user email
+        const userBookings = await Booking.find({ userId: req.user._id })
+            .populate('userId', 'email'); // Fetch only the `email` field from the `User` model
 
         res.status(200).json({
             success: true,

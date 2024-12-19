@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { BASE_URL } from "../../utils/config";
+import '../../styles/SingleBooking.css';
 
 const SingleBooking = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -42,18 +44,53 @@ const SingleBooking = () => {
     if (error) return <p>Error: {error}</p>;
 
     return (
-        <div>
-            <h1>Booking Details</h1>
+        <div className="container my-5">
+            <h1 className="text-center mb-4" style={{ color: '#ff7e01' }}>Booking Details</h1>
             {booking ? (
-                <div>
-                    <h2>{booking.tourName}</h2>
-                    <p>Date: {new Date(booking.bookedAt).toLocaleDateString()}</p>
-                    <p>Email: {booking.userEmail}</p>
-                    <p>Booking ID: {booking._id}</p>
+                <div className="card shadow-lg border-light">
+                    <div className="card-body">
+                        <h5 className="card-title mb-3" style={{ color: '#faa935' }}>{booking.tourName}</h5>
+                        <p className="card-text">
+                            <strong className="text-muted">Booking ID: </strong>
+                            <span className="text-dark">{booking._id}</span>
+                        </p>
+                        <p className="card-text">
+                            <strong className="text-muted">Date: </strong>
+                            <span className="text-dark">
+                                {new Date(booking.bookedAt).toLocaleDateString("en-IN")}
+                            </span>
+                        </p>
+                        <p className="card-text">
+                            <strong className="text-muted">Name: </strong>
+                            <span className="text-dark">{booking.fullName}</span>
+                        </p>
+                        <p className="card-text">
+                            <strong className="text-muted">Email: </strong>
+                            <span className="text-dark">{booking.userEmail}</span>
+                        </p>
+                        <p className="card-text">
+                            <strong className="text-muted">Phone: </strong>
+                            <span className="text-dark">{booking.phone}</span>
+                        </p>
+                        <p className="card-text">
+                            <strong className="text-muted">Guests: </strong>
+                            <span className="text-dark">{booking.guestSize}</span>
+                        </p>
+                    </div>
                 </div>
             ) : (
-                <p>No booking found.</p>
+                <p className="text-center text-muted">No booking found.</p>
             )}
+
+            <div className="text-center mt-4">
+                <button
+                    className="btn mt-3"
+                    style={{ backgroundColor: '#faa935', color: 'white' }}
+                    onClick={() => navigate("/bookings")}
+                >
+                    Go Back to Bookings
+                </button>
+            </div>
         </div>
     );
 };

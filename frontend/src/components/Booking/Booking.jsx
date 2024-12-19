@@ -61,7 +61,7 @@ const Booking = ({ tour, avgRating }) => {
             }
 
             toast.success("Booking successful! Redirecting...");
-            setTimeout(() => navigate('/thank-you'), 3000);
+            setTimeout(() => navigate('/thank-you'), 1000);
         } catch (error) {
             console.error("Booking Error:", error);
             toast.error("An error occurred while making the booking.");
@@ -87,6 +87,15 @@ const Booking = ({ tour, avgRating }) => {
                             type="text"
                             placeholder='Full Name'
                             id='fullName'
+                            onChange={handleChange}
+                            required
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <input
+                            type="email"
+                            placeholder='Email'
+                            id='userEmail'
                             onChange={handleChange}
                             required
                         />
