@@ -7,9 +7,10 @@ import userIcon from '../assets/images/user.png';
 import { AuthContext } from './../context/AuthContext';
 import { BASE_URL } from './../utils/config';
 import { ToastContainer, toast } from 'react-toastify';
+import { auth } from '../utils/firebase';
+import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, FacebookAuthProvider } from "firebase/auth";
 
 const Login = () => {
-
     const [credentials, setCredentials] = useState({
         email: undefined,
         password: undefined,
@@ -56,6 +57,36 @@ const Login = () => {
         }
     };
 
+    const handleSocialLogin = async (provider) => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            toast.success(`Welcome, ${user.displayName || user.email}!`);
+            localStorage.setItem("accessToken", user.accessToken);
+
+            dispatch({
+                type: "LOGIN_SUCCESS",
+                payload: {
+                    email: user.email,
+                    uid: user.uid,
+                    displayName: user.displayName || user.email,
+                },
+            });
+            navigate("/");
+        } catch (error) {
+            if (error.code === "auth/account-exists-with-different-credential") {
+                toast.error(
+                    `An account with this email already exists with a different sign-in provider. 
+                    Please use a different email or provider to log in.`
+                );
+            } else {
+                toast.error(error.message);
+            }
+            dispatch({ type: "LOGIN_FAILURE", payload: error.message });
+        }
+    };
+
     return (
         <section>
             <Container>
@@ -63,12 +94,12 @@ const Login = () => {
                     <Col lg='8' className='m-auto'>
                         <div className="login__container d-flex justify-content-between">
                             <div className="login__img">
-                                <img src={loginImg} alt="" />
+                                <img src={loginImg} alt="Login Illustration" />
                             </div>
 
                             <div className="login__form">
                                 <div className="user">
-                                    <img src={userIcon} alt="" />
+                                    <img src={userIcon} alt="User Icon" />
                                 </div>
                                 <h2>Login</h2>
 
@@ -92,14 +123,39 @@ const Login = () => {
                                     </FormGroup>
 
                                     <Button
-                                        className='btn secondary__btn auth__btn'
+                                        className='btn btn-secondary auth__btn'
                                         type='submit'>
                                         Login
                                     </Button>
                                 </Form>
 
+                                <hr style={{ color: 'black', width: '100%' }} />
+
+                                <div className="social-login d-flex flex-column align-items-start mt-4">
+                                    <Button
+                                        className="btn btn-google w-100 mb-2 d-flex align-items-center"
+                                        onClick={() => handleSocialLogin(new GoogleAuthProvider())}>
+                                        <i className="fab fa-google me-3"></i>
+                                        <span>Login with Google</span>
+                                    </Button>
+
+                                    <Button
+                                        className="btn btn-github w-100 mb-2 d-flex align-items-center"
+                                        onClick={() => handleSocialLogin(new GithubAuthProvider())}>
+                                        <i className="fab fa-github me-3"></i>
+                                        <span>Login with GitHub</span>
+                                    </Button>
+
+                                    <Button
+                                        className="btn btn-facebook w-100 mb-2 d-flex align-items-center"
+                                        onClick={() => handleSocialLogin(new FacebookAuthProvider())}>
+                                        <i className="fab fa-facebook me-3"></i>
+                                        <span>Login with Facebook</span>
+                                    </Button>
+                                </div>
+
                                 <p>Don't have an account?
-                                    <Link to={'/register'}>Create</Link>
+                                    <Link to={'/register'}>Register</Link>
                                 </p>
                             </div>
                         </div>

@@ -79,6 +79,50 @@
     text-decoration: underline;
 }
 
+.social-login {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.social-login .btn {
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.social-login .btn i {
+    font-size: 20px;
+    line-height: 1;
+    margin-right: 15px;
+}
+
+.social-login .btn-google {
+    background-color: #db4437;
+    color: #fff;
+    border: none;
+}
+
+.social-login .btn-github {
+    background-color: #333333;
+    color: #fff;
+    border: none;
+}
+
+.social-login .btn-facebook {
+    background-color: #1877f2;
+    color: #fff;
+    border: none;
+}
+
+.social-login .btn:hover {
+    opacity: 0.95;
+}
+
 @media only screen and (max-width: 768px) {
     .login__img {
         display: none;

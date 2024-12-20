@@ -20,7 +20,10 @@ const AuthReducer = (state, action) => {
 
         case authCases.LOGIN_SUCCESS:
             return {
-                user: action.payload,
+                user: {
+                    ...action.payload,
+                    username: action.payload.displayName || action.payload.email, // Make sure the username is set
+                },
                 loading: false,
                 error: null,
             };
@@ -51,7 +54,6 @@ const AuthReducer = (state, action) => {
             return state;
     }
 };
-
 
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
