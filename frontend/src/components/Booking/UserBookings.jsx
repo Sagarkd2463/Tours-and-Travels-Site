@@ -9,35 +9,48 @@ const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const { user } = useContext(AuthContext);
+    const { user, dispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBookings = async () => {
-            if (!user) {
-                toast.error("Please sign in to view your bookings.");
-                navigate("/login");
-                return;
-            }
-
-            const accessToken = localStorage.getItem("accessToken");
-
             try {
+                // Check if the user is authenticated
+                if (!user) {
+                    throw new Error("Please sign in to view your bookings.");
+                }
+
+                // Retrieve token from localStorage
+                const accessToken = localStorage.getItem("accessToken");
+
+                if (!accessToken) {
+                    throw new Error("Authentication token is missing. Please sign in again.");
+                }
+
+                // Fetch bookings from the backend
                 const response = await fetch(`${BASE_URL}/booking`, {
+                    method: "GET",
                     headers: {
+                        "Content-Type": "application/json",
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
 
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        // Handle unauthorized access
+                        dispatch({ type: "LOGOUT" });
+                        throw new Error("Session expired. Please sign in again.");
+                    }
+
                     const errorData = await response.json();
                     throw new Error(errorData.message || "Failed to fetch bookings.");
                 }
 
                 const data = await response.json();
-                console.log(data);
                 setBookings(data.data || []);
             } catch (err) {
+                console.error("Error fetching bookings:", err.message);
                 setError(err.message);
                 toast.error(err.message);
             } finally {
@@ -46,7 +59,14 @@ const UserBookings = () => {
         };
 
         fetchBookings();
-    }, [user, navigate]);
+    }, [user, dispatch, navigate]);
+
+    // Redirect user to login if not authenticated
+    useEffect(() => {
+        if (!user && !loading) {
+            navigate("/login");
+        }
+    }, [user, loading, navigate]);
 
     if (loading) return <p>Loading bookings...</p>;
     if (error) return <p>Error: {error}</p>;

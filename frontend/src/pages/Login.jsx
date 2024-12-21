@@ -44,14 +44,16 @@ const Login = () => {
             const result = await res.json();
 
             if (!res.ok) {
-                toast.error(result.message);
-            } else {
-                toast.success("Login successful!");
-                localStorage.setItem('accessToken', result.token);
-                dispatch({ type: 'LOGIN_SUCCESS', payload: result.data });
-                navigate('/');
+                throw new Error(result.message);
             }
+
+            localStorage.setItem('accessToken', result.token);
+
+            dispatch({ type: 'LOGIN_SUCCESS', payload: result.data });
+            toast.success("Login successful!");
+            navigate('/');
         } catch (error) {
+            console.error("Login error:", error.message);
             toast.error(error.message);
             dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
         }
@@ -62,20 +64,39 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
-            toast.success(`Welcome, ${user.displayName || user.email}!`);
-            localStorage.setItem("accessToken", user.accessToken);
+            const token = await user.getIdToken();
+            console.log("Firebase ID Token:", token);
+
+            // Send token to the backend for verification
+            const response = await fetch(`${BASE_URL}/users/verify-token`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            console.log("Backend response:", data);
+
+            if (!response.ok) throw new Error(data.message || "Authentication failed.");
+
+            toast.success(`Welcome, ${data.user.name || data.user.email}!`);
+
+            localStorage.setItem("accessToken", token);
 
             dispatch({
                 type: "LOGIN_SUCCESS",
                 payload: {
-                    email: user.email,
-                    uid: user.uid,
-                    displayName: user.displayName || user.email,
+                    email: data.user.email,
+                    uid: data.user.uid,
+                    displayName: data.user.name || data.user.email,
                 },
             });
+
             navigate("/");
         } catch (error) {
-            if (error.code === "auth/account-exists-with-different-credential") {
+            if (error.message.includes("account-exists-with-different-credential")) {
                 toast.error(
                     `An account with this email already exists with a different sign-in provider. 
                     Please use a different email or provider to log in.`
@@ -83,6 +104,7 @@ const Login = () => {
             } else {
                 toast.error(error.message);
             }
+            console.error("Social login error:", error.message);
             dispatch({ type: "LOGIN_FAILURE", payload: error.message });
         }
     };

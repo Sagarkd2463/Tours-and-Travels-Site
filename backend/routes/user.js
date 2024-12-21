@@ -7,7 +7,7 @@ const
         updateUser,
         deleteUser
     } = require('../controllers/userController');
-const { verifyUser, verifyAdmin } = require('../utils/verifyToken');
+const { verifyUser, verifyAdmin, verifyFirebaseToken } = require('../utils/verifyToken');
 
 const router = express.Router();
 
@@ -20,5 +20,13 @@ router.get('/', verifyAdmin, getAllUsers);
 router.put('/:id', verifyUser, updateUser);
 
 router.delete('/:id', verifyUser, deleteUser);
+
+router.post("/verify-token", verifyFirebaseToken, (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Token is valid",
+        user: req.user,
+    });
+});
 
 module.exports = router;
