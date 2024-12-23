@@ -6,8 +6,13 @@ const bookingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
+        firebaseUid: {
+            type: String,
+            required: false,
+        },
         userEmail: {
             type: String,
+            required: true,
         },
         tourName: {
             type: String,
@@ -22,7 +27,7 @@ const bookingSchema = new mongoose.Schema(
             required: true,
         },
         phone: {
-            type: Number,
+            type: String,
             required: true,
         },
         bookedAt: {
@@ -37,6 +42,6 @@ const bookingSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const booking = mongoose.model("Booking", bookingSchema);
+const Booking = mongoose.model("Booking", bookingSchema);
 
-module.exports = booking;
+module.exports = Booking;

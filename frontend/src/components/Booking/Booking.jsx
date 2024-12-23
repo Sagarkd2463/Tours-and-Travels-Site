@@ -12,7 +12,8 @@ const Booking = ({ tour, avgRating }) => {
     const { user } = useContext(AuthContext);
 
     const [booking, setBooking] = useState({
-        userId: user ? user._id : null,
+        userId: user ? user._id : null, // Use MongoDB user ID
+        firebaseUid: user ? user.firebaseUid : '', // Use Firebase UID for authentication
         userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
@@ -46,6 +47,7 @@ const Booking = ({ tour, avgRating }) => {
         const accessToken = localStorage.getItem('accessToken');
 
         try {
+            // Ensure the user is authenticated and send the correct data
             const res = await fetch(`${BASE_URL}/booking`, {
                 method: 'POST',
                 headers: {

@@ -2,7 +2,8 @@ const Booking = require('../models/Booking');
 
 const createBooking = async (req, res) => {
     try {
-        if (!req.user) {
+        // Ensure the user is authenticated (OAuth or email/password)
+        if (!req.user || !req.user.mongoId) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
@@ -11,7 +12,7 @@ const createBooking = async (req, res) => {
 
         const bookingData = {
             ...req.body,
-            userId: req.user._id,
+            userId: req.user.mongoId, // Use MongoDB user ID
             userEmail: req.user.email,
             bookedAt: new Date(req.body.bookedAt),
         };
@@ -69,16 +70,15 @@ const getBooking = async (req, res) => {
 
 const getAllBooking = async (req, res) => {
     try {
-        if (!req.user && (!req.user.id || !req.user._id)) {
+        // Ensure the user is authenticated (OAuth or email/password)
+        if (!req.user || !req.user.mongoId) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        // Fetch all bookings and populate user email
-        const userBookings = await Booking.find({ userId: req.user._id })
-            .populate('userId', 'email'); // Fetch only the `email` field from the `User` model
+        const userBookings = await Booking.find({ userId: req.user.mongoId }).populate('userId', 'email');
 
         res.status(200).json({
             success: true,
@@ -94,8 +94,4 @@ const getAllBooking = async (req, res) => {
     }
 };
 
-module.exports = {
-    createBooking,
-    getBooking,
-    getAllBooking
-};
+module.exports = { createBooking, getBooking, getAllBooking };

@@ -5,7 +5,6 @@ import '../styles/Login.css';
 import loginImg from '../assets/images/login.png';
 import userIcon from '../assets/images/user.png';
 import { AuthContext } from './../context/AuthContext';
-import { BASE_URL } from './../utils/config';
 import { ToastContainer, toast } from 'react-toastify';
 import { auth } from '../utils/firebase';
 import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, FacebookAuthProvider } from "firebase/auth";
@@ -64,35 +63,22 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
+            // Get the Firebase ID token
             const token = await user.getIdToken();
-            console.log("Firebase ID Token:", token);
 
-            // Send token to the backend for verification
-            const response = await fetch(`${BASE_URL}/users/verify-token`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            const data = await response.json();
-            console.log("Backend response:", data);
-
-            if (!response.ok) throw new Error(data.message || "Authentication failed.");
-
-            toast.success(`Welcome, ${data.user.name || data.user.email}!`);
-
+            // Set the token in localStorage
             localStorage.setItem("accessToken", token);
 
             dispatch({
                 type: "LOGIN_SUCCESS",
                 payload: {
-                    email: data.user.email,
-                    uid: data.user.uid,
-                    displayName: data.user.name || data.user.email,
+                    email: user.email,
+                    uid: user.uid,
+                    displayName: user.displayName || user.email,
                 },
             });
+
+            toast.success(`Welcome, ${user.displayName || user.email}!`);
 
             navigate("/");
         } catch (error) {

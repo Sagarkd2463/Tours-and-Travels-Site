@@ -16,14 +16,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     photo: {
       type: String,
     },
-
     role: {
       type: String,
       default: "user",
+    },
+    authProvider: {
+      type: String,
+      default: 'email',
+      enum: ['email'],
     },
   },
   { timestamps: true }
