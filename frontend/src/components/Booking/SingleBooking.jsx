@@ -40,8 +40,30 @@ const SingleBooking = () => {
         if (id) fetchSingleBooking();
     }, [id]);
 
-    if (loading) return <p>Loading booking details...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading booking details...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center mt-5">
+                <p className="text-danger">{error}</p>
+                <button
+                    className="btn mt-3"
+                    style={{ backgroundColor: "#faa935", color: "white" }}
+                    onClick={() => navigate("/bookings")}
+                >
+                    Go to MyBookings
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="container my-5">

@@ -1,8 +1,8 @@
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 import { authCases } from './constants';
 
 const initialState = {
-    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     loading: false,
     error: null,
 };
@@ -22,7 +22,9 @@ const AuthReducer = (state, action) => {
             return {
                 user: {
                     ...action.payload,
-                    username: action.payload.displayName || action.payload.email, // Make sure the username is set
+                    firebaseUid: action.payload.firebaseUid || null,
+                    _id: action.payload._id || null, // MongoDB ID if available
+                    username: action.payload.displayName || action.payload.email, // Ensure username is set
                 },
                 loading: false,
                 error: null,
@@ -30,7 +32,7 @@ const AuthReducer = (state, action) => {
 
         case authCases.LOGIN_FAILURE:
             return {
-                ...state,
+                user: null,
                 loading: false,
                 error: action.payload,
             };

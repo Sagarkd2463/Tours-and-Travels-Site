@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const admin = require('../utils/firebaseAdmin');
+const fetch = require('node-fetch');
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -12,18 +13,23 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json({ success: false, message: "You're not authorized!" });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
-        if (err) {
-            console.error("Token verification failed:", err.message);
-            return res.status(403).json({ success: false, message: "Invalid token!" });
-        }
+    // Try Firebase token verification first
+    verifyFirebaseToken(req, res, () => {
+        // If Firebase token is invalid, proceed with custom JWT token verification
+        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+            if (err) {
+                console.error("Token verification failed:", err.message);
+                return res.status(403).json({ success: false, message: "Invalid token!" });
+            }
 
-        console.log("Decoded user:", user);
-        req.user = user;
-        next();
+            console.log("Decoded user:", user);
+            req.user = user;
+            next();
+        });
     });
 };
 
+// Verify the user using the JWT token
 const verifyUser = (req, res, next) => {
     verifyToken(req, res, () => {
         console.log("Authenticated User:", req.user);
@@ -35,6 +41,7 @@ const verifyUser = (req, res, next) => {
     });
 };
 
+// Verify if the user has admin rights
 const verifyAdmin = (req, res, next) => {
     verifyToken(req, res, () => {
         if (req.user && req.user.role === "admin") {
@@ -49,6 +56,7 @@ const verifyAdmin = (req, res, next) => {
     });
 };
 
+// Firebase token verification
 const verifyFirebaseToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.startsWith("Bearer ")
@@ -62,32 +70,37 @@ const verifyFirebaseToken = async (req, res, next) => {
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
         req.user = decodedToken;
-
         next();
     } catch (firebaseError) {
         console.error("Firebase token verification failed:", firebaseError.message);
 
+        // Handle Firebase verification failure
         if (firebaseError.code !== 'auth/argument-error') {
             return res.status(403).json({
                 success: false,
                 message: "Invalid Firebase token!"
             });
         }
-    }
 
-    // Fallback: Custom JWT verification (use appropriate secret/public key)
-    try {
-        const publicKeyResponse = await fetch('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
-        const decodedToken = jwt.verify(token, publicKeyResponse.data, {
-            algorithms: ['RS256'],
-            audience: process.env.FIREBASE_PROJECT_ID,
-            issuer: `https://securetoken.google.com/${process.env.FIREBASE_PROJECT_ID}`,
-        });
-        req.user = decodedToken;
-        next();
-    } catch (err) {
-        console.error("Custom JWT token verification failed:", err.message);
-        return res.status(403).json({ success: false, message: "Invalid token!" });
+        // Fallback to custom JWT verification (if Firebase token verification fails)
+        try {
+            const publicKeyResponse = await fetch('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+            const publicKeyData = await publicKeyResponse.json();
+            const publicKey = publicKeyData['https://securetoken.google.com/' + process.env.FIREBASE_PROJECT_ID];
+
+            // Verify the token using RS256 (Firebase custom JWT verification)
+            const decodedCustomToken = jwt.verify(token, publicKey, {
+                algorithms: ['RS256'],
+                audience: process.env.FIREBASE_PROJECT_ID,
+                issuer: `https://securetoken.google.com/${process.env.FIREBASE_PROJECT_ID}`,
+            });
+
+            req.user = decodedCustomToken;
+            next();
+        } catch (err) {
+            console.error("Custom JWT token verification failed:", err.message);
+            return res.status(403).json({ success: false, message: "Invalid token!" });
+        }
     }
 };
 

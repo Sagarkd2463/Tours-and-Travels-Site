@@ -71,7 +71,7 @@ const getBooking = async (req, res) => {
 const getAllBooking = async (req, res) => {
     try {
         // Ensure the user is authenticated (OAuth or email/password)
-        if (!req.user || !req.user.mongoId) {
+        if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",

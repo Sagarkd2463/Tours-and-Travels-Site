@@ -26,15 +26,13 @@ const UserBookings = () => {
                     throw new Error("Authentication token is missing. Please sign in again.");
                 }
 
-                // Use firebaseUid if available, otherwise fallback to _id
                 const userUid = user.firebaseUid || user._id;
 
                 if (!userUid) {
-                    throw new Error("User ID is missing. Please sign in again.");
+                    throw new Error("User ID is missing from user context. Please sign in again.");
                 }
 
-                // Dynamically include userId in the URL
-                const response = await fetch(`${BASE_URL}/booking/${userUid}`, {
+                const response = await fetch(`${BASE_URL}/booking`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -45,7 +43,10 @@ const UserBookings = () => {
                 if (!response.ok) {
                     if (response.status === 401) {
                         dispatch({ type: "LOGOUT" });
-                        throw new Error("Session expired. Please sign in again.");
+                        localStorage.removeItem("accessToken");
+                        toast.error("Session expired. Please sign in again.");
+                        navigate("/login");
+                        return;
                     }
                     const errorData = await response.json();
                     throw new Error(errorData.message || "Failed to fetch bookings.");

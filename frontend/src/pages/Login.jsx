@@ -48,7 +48,16 @@ const Login = () => {
 
             localStorage.setItem('accessToken', result.token);
 
-            dispatch({ type: 'LOGIN_SUCCESS', payload: result.data });
+            dispatch({
+                type: 'LOGIN_SUCCESS',
+                payload: {
+                    _id: result.data._id || null,
+                    firebaseUid: result.data.firebaseUid || null,
+                    email: result.data.email,
+                    displayName: result.data.displayName || result.data.email,
+                },
+            });
+
             toast.success("Login successful!");
             navigate('/');
         } catch (error) {
@@ -63,17 +72,16 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
-            // Get the Firebase ID token
             const token = await user.getIdToken();
 
-            // Set the token in localStorage
             localStorage.setItem("accessToken", token);
 
             dispatch({
                 type: "LOGIN_SUCCESS",
                 payload: {
+                    firebaseUid: user.uid,
+                    _id: null,
                     email: user.email,
-                    uid: user.uid,
                     displayName: user.displayName || user.email,
                 },
             });
