@@ -14,57 +14,47 @@ const UserBookings = () => {
 
     useEffect(() => {
         if (!user) {
-            navigate("/login");
+            navigate('/login');
             return;
         }
 
         const fetchBookings = async () => {
             try {
-                const accessToken = localStorage.getItem("accessToken");
-
-                if (!accessToken) {
-                    throw new Error("Authentication token is missing. Please sign in again.");
-                }
-
-                const userUid = user.firebaseUid || user._id;
-
-                if (!userUid) {
-                    throw new Error("User ID is missing from user context. Please sign in again.");
-                }
+                setLoading(true);
+                const accessToken = localStorage.getItem('accessToken');
+                if (!accessToken) throw new Error("Token missing. Please log in.");
 
                 const response = await fetch(`${BASE_URL}/booking`, {
-                    method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        dispatch({ type: "LOGOUT" });
+                        dispatch({ type: 'LOGOUT' });
+                        navigate('/login');
+                        toast.error("Session expired. Please log in again.");
                         localStorage.removeItem("accessToken");
-                        toast.error("Session expired. Please sign in again.");
-                        navigate("/login");
-                        return;
+                    } else {
+                        throw new Error("Failed to fetch bookings.");
                     }
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || "Failed to fetch bookings.");
                 }
 
                 const data = await response.json();
                 setBookings(data.data || []);
+                setLoading(false);
+                setError(null);
             } catch (err) {
                 console.error("Error fetching bookings:", err.message);
                 setError(err.message);
                 toast.error(err.message);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchBookings();
     }, [user, dispatch, navigate]);
+
 
     if (loading) {
         return (

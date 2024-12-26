@@ -2,31 +2,23 @@ const jwt = require('jsonwebtoken');
 const admin = require('../utils/firebaseAdmin');
 const fetch = require('node-fetch');
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.startsWith("Bearer ")
+    const token = authHeader && authHeader.startsWith('Bearer ')
         ? authHeader.split(' ')[1]
         : req.cookies.accessToken;
 
     if (!token) {
-        console.error("Token missing");
         return res.status(401).json({ success: false, message: "You're not authorized!" });
     }
 
-    // Try Firebase token verification first
-    verifyFirebaseToken(req, res, () => {
-        // If Firebase token is invalid, proceed with custom JWT token verification
-        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
-            if (err) {
-                console.error("Token verification failed:", err.message);
-                return res.status(403).json({ success: false, message: "Invalid token!" });
-            }
-
-            console.log("Decoded user:", user);
-            req.user = user;
-            next();
-        });
-    });
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ success: false, message: "Invalid or expired token!" });
+    }
 };
 
 // Verify the user using the JWT token

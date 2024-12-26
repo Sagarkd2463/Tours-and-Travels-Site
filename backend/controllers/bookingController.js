@@ -2,8 +2,7 @@ const Booking = require('../models/Booking');
 
 const createBooking = async (req, res) => {
     try {
-        // Ensure the user is authenticated (OAuth or email/password)
-        if (!req.user || !req.user.mongoId) {
+        if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
@@ -12,7 +11,7 @@ const createBooking = async (req, res) => {
 
         const bookingData = {
             ...req.body,
-            userId: req.user.mongoId, // Use MongoDB user ID
+            userId: req.user.mongoId,
             userEmail: req.user.email,
             bookedAt: new Date(req.body.bookedAt),
         };
@@ -29,24 +28,14 @@ const createBooking = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to book your tour!",
-            data: error.message,
+            error: error.message,
         });
     }
 };
 
 const getBooking = async (req, res) => {
     try {
-        const bookingId = req.params.id;
-
-        if (!bookingId) {
-            return res.status(400).json({
-                success: false,
-                message: "Booking ID is required!",
-            });
-        }
-
-        // Fetch the booking and populate the user's email
-        const booking = await Booking.findById(bookingId).populate('userId', 'email');
+        const booking = await Booking.findById(req.params.id).populate('userId', 'email');
 
         if (!booking) {
             return res.status(404).json({
@@ -70,7 +59,6 @@ const getBooking = async (req, res) => {
 
 const getAllBooking = async (req, res) => {
     try {
-        // Ensure the user is authenticated (OAuth or email/password)
         if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
             return res.status(401).json({
                 success: false,
@@ -78,17 +66,16 @@ const getAllBooking = async (req, res) => {
             });
         }
 
-        const userBookings = await Booking.find({ userId: req.user.mongoId }).populate('userId', 'email');
+        const bookings = await Booking.find({ userId: req.user.mongoId }).populate('userId', 'email');
 
         res.status(200).json({
             success: true,
-            message: "Successfully fetched your booked tours!",
-            data: userBookings,
+            data: bookings,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Failed to fetch your bookings.",
+            message: "Failed to fetch bookings.",
             error: error.message,
         });
     }

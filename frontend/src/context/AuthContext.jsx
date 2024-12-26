@@ -1,4 +1,5 @@
 import { createContext, useReducer, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { authCases } from './constants';
 
 const initialState = {
@@ -46,6 +47,7 @@ const AuthReducer = (state, action) => {
 
         case authCases.LOGOUT:
             localStorage.removeItem('user');
+            localStorage.removeItem('accessToken'); // Ensure token is removed on logout
             return {
                 user: null,
                 loading: false,
@@ -59,6 +61,35 @@ const AuthReducer = (state, action) => {
 
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
+
+    // Check token expiration and automatically log out
+    useEffect(() => {
+        const checkTokenExpiration = () => {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const accessToken = localStorage.getItem('accessToken');
+
+            if (storedUser && accessToken) {
+                try {
+                    const decodedToken = jwtDecode(accessToken);
+                    const currentTime = Date.now() / 1000;
+
+                    if (decodedToken.exp < currentTime) {
+                        // Token expired
+                        dispatch({ type: authCases.LOGOUT });
+                    }
+                } catch (error) {
+                    console.error('Error decoding token:', error.message);
+                    dispatch({ type: authCases.LOGOUT });
+                }
+            }
+        };
+
+        // Run check immediately and periodically every 5 minutes
+        checkTokenExpiration();
+        const interval = setInterval(checkTokenExpiration, 5 * 60 * 1000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (state.user) {
