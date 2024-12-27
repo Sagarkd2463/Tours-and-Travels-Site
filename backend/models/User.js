@@ -14,24 +14,28 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     photo: {
       type: String,
     },
     role: {
       type: String,
-      default: "user",
+      default: 'user',
     },
     authProvider: {
       type: String,
+      required: true,
+      enum: ['email', 'google', 'github', 'facebook'],
       default: 'email',
-      enum: ['email'],
+    },
+    firebaseUid: {
+      type: String,
+      unique: true,
     },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

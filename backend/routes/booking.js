@@ -1,41 +1,18 @@
 const express = require('express');
-const { createBooking, getBooking, getAllBooking } = require('../controllers/bookingController');
-const { verifyFirebaseToken } = require('../utils/verifyToken');
+const { createBookingForEmail, getAllBookingForEmail, getBookingForEmail } = require('../controllers/bookingControllerForEmail');
+const { verifyToken } = require('../utils/verifyToken');
+const { createBookingForFirebase, getAllBookingForFirebase, getBookingForFirebase } = require('../controllers/bookingControllerForFirebase');
+const { verifyFirebaseToken } = require('../utils/verifyFirebaseToken');
 
 const router = express.Router();
 
-router.post('/', verifyFirebaseToken, async (req, res) => {
-    try {
-        await createBooking(req, res);
-    } catch (error) {
-        console.error("Error creating booking:", error.message);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-});
+// Route-level middleware allows chaining multiple handlers
+router.post('/', verifyToken, createBookingForEmail);
+router.get('/', verifyToken, getAllBookingForEmail);
+router.get('/:id', verifyToken, getBookingForEmail);
 
-router.get('/', verifyFirebaseToken, async (req, res) => {
-    if (!req.user || !req.user.mongoId) {
-        return res.status(401).json({
-            success: false,
-            message: "Unauthorized access. Please sign in.",
-        });
-    }
-
-    try {
-        await getAllBooking(req, res);
-    } catch (error) {
-        console.error("Error fetching user bookings:", error.message);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-});
-
-router.get('/:id', verifyFirebaseToken, async (req, res) => {
-    try {
-        await getBooking(req, res);
-    } catch (error) {
-        console.error("Error fetching specific booking:", error.message);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-});
+router.post('/firebase-create', verifyFirebaseToken, createBookingForFirebase);
+router.get('/firebase-users', verifyFirebaseToken, getAllBookingForFirebase);
+router.get('/firebase-user/:id', verifyFirebaseToken, getBookingForFirebase);
 
 module.exports = router;

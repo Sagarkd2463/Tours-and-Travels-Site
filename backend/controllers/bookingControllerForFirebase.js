@@ -1,8 +1,8 @@
 const Booking = require('../models/Booking');
 
-const createBooking = async (req, res) => {
+const createBookingForFirebase = async (req, res) => {
     try {
-        if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
+        if (!req.user || !req.user.uid) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
@@ -11,9 +11,9 @@ const createBooking = async (req, res) => {
 
         const bookingData = {
             ...req.body,
-            userId: req.user.mongoId,
+            userId: req.user.uid,  // Firebase UID
             userEmail: req.user.email,
-            bookedAt: new Date(req.body.bookedAt),
+            bookedAt: new Date(req.body.bookedAt), // Validate date if needed
         };
 
         const newBooking = new Booking(bookingData);
@@ -33,7 +33,31 @@ const createBooking = async (req, res) => {
     }
 };
 
-const getBooking = async (req, res) => {
+const getAllBookingForFirebase = async (req, res) => {
+    try {
+        if (!req.user || !req.user.uid) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized access. Please sign in to view your bookings.",
+            });
+        }
+
+        const bookings = await Booking.find({ userId: req.user.uid }).populate('userId', 'email');
+
+        res.status(200).json({
+            success: true,
+            data: bookings,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch bookings.",
+            error: error.message,
+        });
+    }
+};
+
+const getBookingForFirebase = async (req, res) => {
     try {
         const booking = await Booking.findById(req.params.id).populate('userId', 'email');
 
@@ -57,28 +81,4 @@ const getBooking = async (req, res) => {
     }
 };
 
-const getAllBooking = async (req, res) => {
-    try {
-        if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized access. Please sign in to view your bookings.",
-            });
-        }
-
-        const bookings = await Booking.find({ userId: req.user.mongoId }).populate('userId', 'email');
-
-        res.status(200).json({
-            success: true,
-            data: bookings,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch bookings.",
-            error: error.message,
-        });
-    }
-};
-
-module.exports = { createBooking, getBooking, getAllBooking };
+module.exports = { createBookingForFirebase, getAllBookingForFirebase, getBookingForFirebase };

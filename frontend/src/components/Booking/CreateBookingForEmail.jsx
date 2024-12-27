@@ -12,9 +12,8 @@ const Booking = ({ tour, avgRating }) => {
     const { user } = useContext(AuthContext);
 
     const [booking, setBooking] = useState({
-        userId: user ? user._id : null, // Use MongoDB user ID
-        firebaseUid: user ? user.firebaseUid : '', // Use Firebase UID for authentication
-        userEmail: user ? user.email : '',
+        userId: user ? user._id : null, // MongoDB user ID
+        userEmail: user ? user.email : '', // Use email for authentication
         tourName: title,
         fullName: '',
         phone: '',
@@ -52,7 +51,7 @@ const Booking = ({ tour, avgRating }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${accessToken}` // Send JWT token in headers
                 },
                 body: JSON.stringify(booking),
             });
@@ -98,8 +97,8 @@ const Booking = ({ tour, avgRating }) => {
                             type="email"
                             placeholder='Email'
                             id='userEmail'
-                            onChange={handleChange}
-                            required
+                            value={user?.email || ''}
+                            readOnly
                         />
                     </FormGroup>
                     <FormGroup>

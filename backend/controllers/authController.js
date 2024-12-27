@@ -4,14 +4,24 @@ const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
     try {
+        const { username, email, password, photo } = req.body;
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User already exists with this email!',
+            });
+        }
+
         const salt = bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+        const hashedPassword = bcrypt.hash(password, salt);
 
         const newUser = new User({
-            username: req.body.username,
-            email: req.body.email,
+            username,
+            email,
             password: hashedPassword,
-            photo: req.body.photo,
+            photo,
         });
 
         await newUser.save();
@@ -24,14 +34,14 @@ const register = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             success: false,
-            message: 'Failed to create. Try again!',
+            message: 'Failed to create user. Try again!',
             data: err.message,
         });
     }
 };
 
 const login = async (req, res) => {
-    const email = req.body.email;
+    const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ email });
@@ -43,7 +53,7 @@ const login = async (req, res) => {
             });
         }
 
-        const checkPassword = await bcrypt.compare(req.body.password, user.password);
+        const checkPassword = bcrypt.compare(password, user.password);
 
         if (!checkPassword) {
             return res.status(401).json({
@@ -52,7 +62,7 @@ const login = async (req, res) => {
             });
         }
 
-        const { password, role, ...info } = user._doc;
+        const { password: pwd, role, ...info } = user._doc;
 
         const token = jwt.sign(
             {

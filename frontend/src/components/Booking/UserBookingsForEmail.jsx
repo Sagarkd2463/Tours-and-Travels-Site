@@ -55,7 +55,6 @@ const UserBookings = () => {
         fetchBookings();
     }, [user, dispatch, navigate]);
 
-
     if (loading) {
         return (
             <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
@@ -115,13 +114,13 @@ const UserBookings = () => {
                                         <strong className="text-muted">Guests: </strong>
                                         <span className="text-dark">{booking.guestSize}</span>
                                     </p>
-                                    <div className="d-flex justify-content-between align-items-center mt-4">
-                                        <button
-                                            className="btn btn-outline-primary w-100"
-                                            onClick={() => navigate(`/booking/${booking._id}`)}
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <span
+                                            className="badge text-bg-success"
+                                            style={{ backgroundColor: "#ff7e01" }}
                                         >
-                                            View Details
-                                        </button>
+                                            ${booking.totalAmount}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -129,16 +128,7 @@ const UserBookings = () => {
                     ))}
                 </div>
             ) : (
-                <div className="text-center mt-5">
-                    <p className="text-muted">You have no bookings yet.</p>
-                    <button
-                        className="btn mt-3"
-                        style={{ backgroundColor: "#faa935", color: "white" }}
-                        onClick={() => navigate("/tours")}
-                    >
-                        Create a Booking
-                    </button>
-                </div>
+                <p className="text-center">No bookings yet.</p>
             )}
         </div>
     );
