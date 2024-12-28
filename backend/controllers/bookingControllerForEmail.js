@@ -10,10 +10,14 @@ const createBookingForEmail = async (req, res) => {
         }
 
         const bookingData = {
-            ...req.body,
             userId: req.user.mongoId,
             userEmail: req.user.email,
-            bookedAt: new Date(req.body.bookedAt), // Validate date if needed
+            tourName: req.body.tourName,
+            fullName: req.body.fullName,
+            phone: req.body.phone,
+            guestSize: req.body.guestSize,
+            totalAmount: req.body.totalAmount,
+            bookedAt: new Date(req.body.bookedAt),
         };
 
         const newBooking = new Booking(bookingData);
@@ -35,7 +39,7 @@ const createBookingForEmail = async (req, res) => {
 
 const getBookingForEmail = async (req, res) => {
     try {
-        const booking = await Booking.findById(req.params.id).populate('userId', 'email');
+        const booking = await Booking.findById(req.params.id);
 
         if (!booking) {
             return res.status(404).json({
@@ -59,7 +63,7 @@ const getBookingForEmail = async (req, res) => {
 
 const getAllBookingForEmail = async (req, res) => {
     try {
-        if (!req.user || (!req.user.id && !req.user._id && !req.user.mongoId)) {
+        if (!req.user || (!req.user.id || !req.user._id || !req.user.mongoId)) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",

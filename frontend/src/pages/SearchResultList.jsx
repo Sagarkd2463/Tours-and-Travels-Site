@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import CommonSection from './../shared/CommonSection';
+import CommonSection from '../shared/CommonSection';
 import { Container, Col, Row } from 'reactstrap';
-import TourCard from './../shared/TourCard';
+import TourCard from '../shared/TourCard';
 import { useLocation } from 'react-router-dom';
-import Newsletter from './../shared/Newsletter';
+import Newsletter from '../shared/Newsletter';
 
 const SearchResultList = () => {
 

@@ -15,16 +15,15 @@ const SingleBooking = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-
         const fetchBooking = async () => {
+            if (!user) {
+                navigate('/login');
+                return;
+            }
+
             try {
-                setLoading(true);
                 const accessToken = localStorage.getItem('accessToken');
-                if (!accessToken) throw new Error('Authentication token missing. Please log in.');
+                if (!accessToken) throw new Error("Authentication token missing. Please log in.");
 
                 const response = await fetch(`${BASE_URL}/booking/${bookingId}`, {
                     headers: {
@@ -34,22 +33,21 @@ const SingleBooking = () => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        toast.error('Session expired. Please log in again.');
+                        toast.error("Session expired. Please log in again.");
                         navigate('/login');
                     } else {
-                        throw new Error('Failed to fetch booking details.');
+                        throw new Error("Failed to fetch booking details.");
                     }
                 }
 
                 const data = await response.json();
                 setBooking(data.data);
-                setLoading(false);
-                setError(null);
             } catch (err) {
-                console.error('Error fetching booking:', err.message);
-                setError(err.message);
-                setLoading(false);
+                console.error("Error fetching booking:", err.message);
                 toast.error(err.message);
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -105,7 +103,7 @@ const SingleBooking = () => {
                             <div className="d-flex justify-content-between">
                                 <Button
                                     className="btn btn-danger"
-                                    onClick={() => navigate('/user-bookings')}
+                                    onClick={() => navigate('/bookings')}
                                 >
                                     Back to Bookings
                                 </Button>

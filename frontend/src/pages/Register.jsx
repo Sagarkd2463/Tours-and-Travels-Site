@@ -4,8 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import registerImg from '../assets/images/register.png';
 import '../styles/Register.css';
 import userIcon from '../assets/images/user.png';
-import { AuthContext } from './../context/AuthContext';
-import { BASE_URL } from './../utils/config';
+import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../utils/config';
 import { ToastContainer, toast } from 'react-toastify';
 
 const Register = () => {

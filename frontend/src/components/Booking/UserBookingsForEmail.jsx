@@ -114,13 +114,18 @@ const UserBookings = () => {
                                         <strong className="text-muted">Guests: </strong>
                                         <span className="text-dark">{booking.guestSize}</span>
                                     </p>
+                                    <p className="card-text">
+                                        <strong className="text-muted">Amount: </strong>
+                                        <span className="text-dark">${booking.totalAmount || 0}</span>
+                                    </p>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <span
-                                            className="badge text-bg-success"
+                                        <button
+                                            className="btn btn-primary"
                                             style={{ backgroundColor: "#ff7e01" }}
+                                            onClick={() => navigate(`/booking/${booking._id}`)}
                                         >
-                                            ${booking.totalAmount}
-                                        </span>
+                                            View Details
+                                        </button>
                                     </div>
                                 </div>
                             </div>

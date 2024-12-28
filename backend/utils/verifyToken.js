@@ -1,43 +1,42 @@
 const jwt = require('jsonwebtoken');
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.startsWith('Bearer ')
         ? authHeader.split(' ')[1]
-        : req.cookies.accessToken;
+        : req.cookies?.accessToken;
 
     if (!token) {
-        return res.status(401).json({ success: false, message: "You're not authorized!" });
+        return res.status(401).json({ success: false, message: "Authentication required: Token missing!" });
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        req.user = decoded;
+        req.user = decoded; // Attach decoded user info to the request
         next();
     } catch (err) {
+        console.error("Token verification error:", err.message);
         return res.status(403).json({ success: false, message: "Invalid or expired token!" });
     }
 };
 
-// Verify the user using the JWT token
 const verifyUser = (req, res, next) => {
     verifyToken(req, res, () => {
-        console.log("Authenticated User:", req.user);
         if (req.user && (req.user.id || req.user._id)) {
             next();
         } else {
-            return res.status(401).json({ success: false, message: "You're not authenticated!" });
+            console.error("Authentication failed. User not found in token payload.");
+            return res.status(401).json({ success: false, message: "Authentication required: User invalid!" });
         }
     });
 };
 
-// Verify if the user has admin rights
 const verifyAdmin = (req, res, next) => {
     verifyToken(req, res, () => {
         if (req.user && req.user.role === "admin") {
             next();
         } else {
-            console.error("Admin access denied. User:", req.user);
+            console.error("Admin access denied. User role:", req.user?.role);
             return res.status(403).json({
                 success: false,
                 message: "Admin access only!",
@@ -45,6 +44,5 @@ const verifyAdmin = (req, res, next) => {
         }
     });
 };
-
 
 module.exports = { verifyToken, verifyUser, verifyAdmin };

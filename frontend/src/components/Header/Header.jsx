@@ -4,7 +4,7 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
-import { AuthContext } from './../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 
 const nav_links = [
   {

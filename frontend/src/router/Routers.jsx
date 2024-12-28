@@ -7,8 +7,8 @@ import Login from '../components/Login/Login';
 import Register from '../pages/Register';
 import SearchResultList from '../pages/SearchResultList';
 import ThankYou from '../pages/ThankYou';
-import UserBookings from '../components/Booking/UserBookings';
-import SingleBooking from '../components/Booking/SingleBooking';
+import UserBookings from '../components/Booking/UserBookingsForEmail';
+import SingleBooking from '../components/Booking/SingleBookingForEmail';
 
 const Routers = () => {
     return (

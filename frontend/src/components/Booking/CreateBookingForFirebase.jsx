@@ -2,18 +2,18 @@ import React, { useState, useContext } from 'react';
 import '../../styles/Booking.css';
 import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
 import { BASE_URL } from '../../utils/config';
 import { toast, ToastContainer } from 'react-toastify';
 
-const Booking = ({ tour, avgRating }) => {
+const FirebaseBooking = ({ tour, avgRating }) => {
     const { price, reviews, title } = tour;
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+    const { user } = useContext(AuthFirebaseContext);
 
     const [booking, setBooking] = useState({
-        userId: user ? user._id : null, // MongoDB user ID
-        userEmail: user ? user.email : '', // Use email for authentication
+        userId: user ? user.uid : null, // Firebase UID
+        userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
@@ -43,14 +43,11 @@ const Booking = ({ tour, avgRating }) => {
             return toast.error("Please select a valid date!");
         }
 
-        const accessToken = localStorage.getItem('accessToken');
-
         try {
-            const res = await fetch(`${BASE_URL}/booking`, {
+            const res = await fetch(`${BASE_URL}/booking/firebase-create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({ ...booking, totalAmount }),
             });
@@ -152,4 +149,4 @@ const Booking = ({ tour, avgRating }) => {
     );
 };
 
-export default Booking;
+export default FirebaseBooking;
