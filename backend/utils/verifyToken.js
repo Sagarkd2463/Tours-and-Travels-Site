@@ -1,22 +1,35 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.startsWith('Bearer ')
-        ? authHeader.split(' ')[1]
-        : req.cookies?.accessToken;
-
-    if (!token) {
-        return res.status(401).json({ success: false, message: "Authentication required: Token missing!" });
-    }
-
     try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.startsWith('Bearer ')
+            ? authHeader.split(' ')[1]
+            : req.cookies?.accessToken;
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Authentication required: Token missing!",
+            });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        req.user = decoded; // Attach decoded user info to the request
+
+        req.user = decoded;
         next();
     } catch (err) {
         console.error("Token verification error:", err.message);
-        return res.status(403).json({ success: false, message: "Invalid or expired token!" });
+
+        const errorMessage =
+            err.name === "TokenExpiredError"
+                ? "Authentication required: Token has expired!"
+                : "Authentication required: Invalid token!";
+
+        return res.status(401).json({
+            success: false,
+            message: errorMessage,
+        });
     }
 };
 
@@ -25,7 +38,6 @@ const verifyUser = (req, res, next) => {
         if (req.user && (req.user.id || req.user._id)) {
             next();
         } else {
-            console.error("Authentication failed. User not found in token payload.");
             return res.status(401).json({ success: false, message: "Authentication required: User invalid!" });
         }
     });

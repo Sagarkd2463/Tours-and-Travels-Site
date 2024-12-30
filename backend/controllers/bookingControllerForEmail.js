@@ -63,24 +63,24 @@ const getBookingForEmail = async (req, res) => {
 
 const getAllBookingForEmail = async (req, res) => {
     try {
-        if (!req.user || (!req.user.id || !req.user._id || !req.user.mongoId)) {
+        if (!req.user || !req.user.id || !req.user._id) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.mongoId }).populate('userId', 'email');
+        const bookings = await Booking.find({ userId: req.user.id }).populate('userId', 'email');
 
         res.status(200).json({
             success: true,
             data: bookings,
         });
     } catch (error) {
+        console.error("Error fetching bookings:", error.message);
         res.status(500).json({
             success: false,
             message: "Failed to fetch bookings.",
-            error: error.message,
         });
     }
 };

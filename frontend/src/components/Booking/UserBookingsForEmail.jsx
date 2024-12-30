@@ -7,21 +7,23 @@ import "../../styles/UserBookings.css";
 
 const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const { user, dispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
-            navigate('/login');
+            navigate("/login");
             return;
         }
 
         const fetchBookings = async () => {
             try {
                 setLoading(true);
-                const accessToken = localStorage.getItem('accessToken');
+
+                const accessToken = localStorage.getItem("accessToken");
+
                 if (!accessToken) throw new Error("Token missing. Please log in.");
 
                 const response = await fetch(`${BASE_URL}/booking`, {
@@ -32,8 +34,8 @@ const UserBookings = () => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        dispatch({ type: 'LOGOUT' });
-                        navigate('/login');
+                        dispatch({ type: "LOGOUT" });
+                        navigate("/login");
                         toast.error("Session expired. Please log in again.");
                         localStorage.removeItem("accessToken");
                     } else {

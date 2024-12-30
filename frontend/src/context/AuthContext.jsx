@@ -5,6 +5,7 @@ const initialState = {
     user: JSON.parse(localStorage.getItem('user')) || null,
     loading: false,
     error: null,
+    accessToken: localStorage.getItem('accessToken') || null,
 };
 
 export const AuthContext = createContext(initialState);
@@ -19,14 +20,12 @@ const AuthReducer = (state, action) => {
             };
 
         case authCases.LOGIN_SUCCESS:
+            const { token, ...userDetails } = action.payload;
+
             return {
-                user: {
-                    ...action.payload,
-                    firebaseUid: action.payload.firebaseUid || null,
-                    _id: action.payload._id || null, // MongoDB ID if available
-                    username: action.payload.displayName || action.payload.email, // Ensure username is set
-                    authProvider: action.payload.authProvider || 'email', // Keep track of authentication method
-                },
+                ...state,
+                user: userDetails,
+                accessToken: token,
                 loading: false,
                 error: null,
             };
@@ -34,6 +33,7 @@ const AuthReducer = (state, action) => {
         case authCases.LOGIN_FAILURE:
             return {
                 user: null,
+                accessToken: null,
                 loading: false,
                 error: action.payload,
             };
@@ -47,9 +47,10 @@ const AuthReducer = (state, action) => {
 
         case authCases.LOGOUT:
             localStorage.removeItem('user');
-            localStorage.removeItem('accessToken'); // Ensure token is removed on logout
+            localStorage.removeItem('accessToken');
             return {
                 user: null,
+                accessToken: null,
                 loading: false,
                 error: null,
             };
@@ -68,12 +69,19 @@ export const AuthContextProvider = ({ children }) => {
         } else {
             localStorage.removeItem('user');
         }
-    }, [state.user]);
+
+        if (state.accessToken) {
+            localStorage.setItem('accessToken', state.accessToken);
+        } else {
+            localStorage.removeItem('accessToken');
+        }
+    }, [state.user, state.accessToken]);
 
     return (
         <AuthContext.Provider
             value={{
                 user: state.user,
+                accessToken: state.accessToken,
                 loading: state.loading,
                 error: state.error,
                 dispatch,

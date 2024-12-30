@@ -33,11 +33,11 @@ const EmailPasswordLogin = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(credentials),
             });
 
             const result = await res.json();
-
             if (!res.ok) {
                 throw new Error(result.message);
             }
@@ -48,9 +48,9 @@ const EmailPasswordLogin = () => {
                 type: 'LOGIN_SUCCESS',
                 payload: {
                     _id: result.data._id || null,
-                    firebaseUid: result.data.firebaseUid || null,
                     email: result.data.email,
                     displayName: result.data.displayName || result.data.email,
+                    token: result.token
                 },
             });
 
