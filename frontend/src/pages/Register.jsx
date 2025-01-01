@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Container, Col, Row, Button, Form, FormGroup } from 'reactstrap';
+import { Container, Col, Row, Form, FormGroup } from 'reactstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import registerImg from '../assets/images/register.png';
 import '../styles/Register.css';
@@ -9,11 +9,10 @@ import { BASE_URL } from '../utils/config';
 import { ToastContainer, toast } from 'react-toastify';
 
 const Register = () => {
-
     const [credentials, setCredentials] = useState({
-        username: undefined,
-        email: undefined,
-        password: undefined,
+        username: '',
+        email: '',
+        password: '',
     });
 
     const { dispatch } = useContext(AuthContext);
@@ -22,7 +21,7 @@ const Register = () => {
     const handleChange = (e) => {
         setCredentials((prev) => ({
             ...prev,
-            [e.target.id]: e.target.value
+            [e.target.id]: e.target.value,
         }));
     };
 
@@ -33,22 +32,23 @@ const Register = () => {
             const res = await fetch(`${BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(credentials),
             });
 
             const result = await res.json();
+            console.log("Response:", result);
 
             if (!res.ok) {
-                toast.error(result.message);
+                toast.error(`Registration failed: ${result.message}`);
             } else {
                 toast.success("Registration successful!");
                 dispatch({ type: 'REGISTER_SUCCESS' });
                 navigate('/login');
             }
         } catch (error) {
-            toast.error(error.message);
+            toast.error(`An error occurred: ${error.message}`);
         }
     };
 
@@ -72,38 +72,46 @@ const Register = () => {
                                     <FormGroup>
                                         <input
                                             type="text"
-                                            placeholder='Username'
-                                            id='username'
+                                            placeholder="Username"
+                                            id="username"
                                             onChange={handleChange}
-                                            required />
+                                            value={credentials.username}
+                                            required
+                                        />
                                     </FormGroup>
 
                                     <FormGroup>
                                         <input
                                             type="email"
-                                            placeholder='Email'
-                                            id='email'
+                                            placeholder="Email"
+                                            id="email"
                                             onChange={handleChange}
-                                            required />
+                                            value={credentials.email}
+                                            required
+                                        />
                                     </FormGroup>
 
                                     <FormGroup>
                                         <input
                                             type="password"
-                                            placeholder='Password'
-                                            id='password'
+                                            placeholder="Password"
+                                            id="password"
                                             onChange={handleChange}
-                                            required />
+                                            value={credentials.password}
+                                            required
+                                        />
                                     </FormGroup>
 
-                                    <Button
-                                        className='btn secondary__btn auth__btn'
-                                        type='submit'>
+                                    <button
+                                        className="btn auth__register_btn"
+                                        type="submit"
+                                    >
                                         Create Account
-                                    </Button>
+                                    </button>
                                 </Form>
 
-                                <p>Already have an account?
+                                <p>
+                                    Already have an account?{' '}
                                     <Link to={'/login'}>Login</Link>
                                 </p>
                             </div>

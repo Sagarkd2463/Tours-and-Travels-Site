@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../utils/config";
 import "../../styles/UserBookings.css";
+import axios from "axios";
 
 const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -26,7 +27,7 @@ const UserBookings = () => {
 
                 if (!accessToken) throw new Error("Token missing. Please log in.");
 
-                const response = await fetch(`${BASE_URL}/booking`, {
+                const response = await axios.get(`${BASE_URL}/booking`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },

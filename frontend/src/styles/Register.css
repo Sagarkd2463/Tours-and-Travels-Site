@@ -23,9 +23,9 @@
     width: 80px;
     height: 80px;
     position: absolute;
-    top: -9%;
+    top: -8.5%;
     left: 50%;
-    transform: translate(-50%, -9%);
+    transform: translate(-50%, -8.5%);
 }
 
 .register__form .user img {
@@ -55,14 +55,14 @@
     outline: none;
 }
 
-.auth__btn {
-    background: var(--heading-color) !important;
+.auth__register_btn {
+    background-color: rgb(245, 80, 9) !important;
     width: 100%;
-    color: #fff !important;
+    color: white !important;
 }
 
 .register__form p {
-    font-size: 0.9rem;
+    font-size: 15.5px;
     color: #fff;
     margin-top: 1.5rem;
     text-align: center;

@@ -63,14 +63,24 @@ const getBookingForEmail = async (req, res) => {
 
 const getAllBookingForEmail = async (req, res) => {
     try {
-        if (!req.user || !req.user.id || !req.user._id) {
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.id }).populate('userId', 'email');
+        const formattedUserId = typeof userId === "string" ? userId : userId.toString();
+
+        const bookings = await Booking.find({ userId: formattedUserId }).populate('userId', 'email');
+
+        if (!bookings || bookings.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No bookings found for the user.",
+            });
+        }
 
         res.status(200).json({
             success: true,

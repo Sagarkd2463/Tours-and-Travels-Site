@@ -4,6 +4,7 @@ import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../utils/config';
 import '../../styles/SingleBooking.css';
+import axios from 'axios';
 
 const SingleBooking = () => {
     const { bookingId } = useParams();
@@ -20,7 +21,7 @@ const SingleBooking = () => {
 
         const fetchBookingDetails = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/booking/${bookingId}?userId=${user.uid}`);
+                const response = await axios.get(`${BASE_URL}/booking/${bookingId}?userId=${user.uid}`);
                 const data = await response.json();
                 if (response.ok) {
                     setBooking(data.data); // Assuming your API returns the booking data here

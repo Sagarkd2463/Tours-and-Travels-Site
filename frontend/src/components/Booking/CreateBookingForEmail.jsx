@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
 import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
 
 const Booking = ({ tour, avgRating }) => {
     const { price, reviews, title } = tour;
@@ -46,8 +47,7 @@ const Booking = ({ tour, avgRating }) => {
         const accessToken = localStorage.getItem('accessToken');
 
         try {
-            const res = await fetch(`${BASE_URL}/booking`, {
-                method: 'POST',
+            const res = await axios.post(`${BASE_URL}/booking`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${accessToken}`,

@@ -14,7 +14,7 @@ const register = async (req, res) => {
             });
         }
 
-        const salt = bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new User({
@@ -26,16 +26,18 @@ const register = async (req, res) => {
 
         await newUser.save();
 
+        const { _id } = newUser;
         res.status(201).json({
             success: true,
             message: 'Successfully created new user!',
-            data: newUser,
+            data: { _id, username, email, photo },
         });
     } catch (err) {
+        console.error("Error creating user:", err.message);
         res.status(500).json({
             success: false,
             message: 'Failed to create user. Try again!',
-            data: err.message,
+            error: err.message,
         });
     }
 };

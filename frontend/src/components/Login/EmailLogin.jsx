@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Container, Col, Row, Button, Form, FormGroup } from 'reactstrap';
+import { Container, Col, Row, Form, FormGroup, ButtonGroup } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
@@ -89,11 +89,11 @@ const EmailPasswordLogin = () => {
                                     required />
                             </FormGroup>
 
-                            <Button
-                                className='btn btn-secondary auth__btn'
+                            <button
+                                className='btn auth__login_btn'
                                 type='submit'>
                                 Login
-                            </Button>
+                            </button>
                         </Form>
                     </Col>
                 </Row>

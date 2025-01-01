@@ -5,6 +5,7 @@ import { BASE_URL } from '../../utils/config';
 import { toast, ToastContainer } from 'react-toastify';
 import { Button } from 'reactstrap';
 import '../../styles/SingleBooking.css';
+import axios from 'axios';
 
 const SingleBooking = () => {
     const [booking, setBooking] = useState(null);
@@ -25,7 +26,7 @@ const SingleBooking = () => {
                 const accessToken = localStorage.getItem('accessToken');
                 if (!accessToken) throw new Error("Authentication token missing. Please log in.");
 
-                const response = await fetch(`${BASE_URL}/booking/${bookingId}`, {
+                const response = await axios.get(`${BASE_URL}/booking/${bookingId}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
 import { BASE_URL } from '../../utils/config';
 import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
 
 const FirebaseBooking = ({ tour, avgRating }) => {
     const { price, reviews, title } = tour;
@@ -44,8 +45,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         }
 
         try {
-            const res = await fetch(`${BASE_URL}/booking/firebase-create`, {
-                method: 'POST',
+            const res = await axios.post(`${BASE_URL}/booking/firebase-create`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

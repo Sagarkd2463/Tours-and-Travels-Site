@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../utils/config';
 import '../../styles/UserBookings.css';
+import axios from 'axios';
 
 const FirebaseUserBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -18,7 +19,7 @@ const FirebaseUserBookings = () => {
 
         const fetchBookings = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/booking?userId=${user.uid}`);
+                const response = await axios.get(`${BASE_URL}/booking?userId=${user.uid}`);
                 const data = await response.json();
                 setBookings(data.data || []);
             } catch (err) {
