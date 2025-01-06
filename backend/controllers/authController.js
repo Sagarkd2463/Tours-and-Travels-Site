@@ -95,4 +95,112 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { register, login };
+const oauthHandler = async (req, res, platform) => {
+    try {
+        const { name, email, photo, firebaseUid } = req.body;
+
+        if (!name || !email || !firebaseUid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: name, email, or firebaseUid.',
+            });
+        }
+
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // Check if the auth provider matches
+            if (user.authProvider !== platform) {
+                return res.status(400).json({
+                    success: false,
+                    message: `This email is already registered with ${user.authProvider}. Please use another email with other provider.`,
+                });
+            }
+
+            // Generate JWT token for existing user
+            const token = jwt.sign(
+                { id: user._id, email: user.email, role: user.role },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: '15d' }
+            );
+
+            return res
+                .cookie('accessToken', token, {
+                    httpOnly: true,
+                    expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+                })
+                .status(200)
+                .json({
+                    success: true,
+                    message: `Successfully logged in with ${platform}.`,
+                    data: {
+                        id: user._id,
+                        username: user.username,
+                        email: user.email,
+                        photo: user.photo,
+                        role: user.role,
+                    },
+                });
+        }
+
+        // Create new user
+        const usernameBase = name.split(' ').join('').toLowerCase();
+        const uniqueUsername = `${usernameBase}${Math.random().toString(36).slice(-4)}`;
+
+        const newUser = new User({
+            username: uniqueUsername,
+            email,
+            photo,
+            authProvider: platform,
+            firebaseUid,
+        });
+
+        await newUser.save();
+
+        // Generate JWT token for the new user
+        const token = jwt.sign(
+            { id: newUser._id, email: newUser.email, role: newUser.role },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '15d' }
+        );
+
+        res
+            .cookie('accessToken', token, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+            })
+            .status(201)
+            .json({
+                success: true,
+                message: `Successfully created a new user via ${platform}.`,
+                data: {
+                    id: newUser._id,
+                    username: newUser.username,
+                    email: newUser.email,
+                    photo: newUser.photo,
+                    role: newUser.role,
+                },
+            });
+    } catch (err) {
+        console.error(`${platform} OAuth Error:`, err.message);
+        res.status(500).json({
+            success: false,
+            message: `Failed to authenticate with ${platform}.`,
+            error: err.message,
+        });
+    }
+};
+
+const googleOAuth = async (req, res) => {
+    await oauthHandler(req, res, 'google');
+};
+
+const facebookOAuth = async (req, res) => {
+    await oauthHandler(req, res, 'facebook');
+};
+
+const githubOAuth = async (req, res) => {
+    await oauthHandler(req, res, 'github');
+};
+
+module.exports = { register, login, googleOAuth, facebookOAuth, githubOAuth };
