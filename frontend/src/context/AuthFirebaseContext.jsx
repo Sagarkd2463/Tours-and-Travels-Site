@@ -1,7 +1,6 @@
 import React, { createContext, useReducer, useEffect } from 'react';
-import { auth } from '../utils/firebase';
 import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
-import { googleProvider, facebookProvider, githubProvider } from '../utils/firebase';
+import { auth, googleProvider, facebookProvider, githubProvider } from '../utils/firebase';
 import { authCases } from './constants';
 
 const initialState = {

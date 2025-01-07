@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     authProvider: {
       type: String,
       required: true,
-      enum: ['email', 'google', 'github', 'facebook'],
+      enum: ['email', 'Google', 'GitHub', 'Facebook'],
       default: 'email',
     },
     firebaseUid: {

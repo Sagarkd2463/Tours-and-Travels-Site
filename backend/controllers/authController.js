@@ -113,7 +113,8 @@ const oauthHandler = async (req, res, platform) => {
             if (user.authProvider !== platform) {
                 return res.status(400).json({
                     success: false,
-                    message: `This email is already registered with ${user.authProvider}. Please use another email with other provider.`,
+                    message: `This email is already registered with ${user.authProvider}. 
+                    Please use other provider with different email to log in.`,
                 });
             }
 
@@ -139,11 +140,11 @@ const oauthHandler = async (req, res, platform) => {
                         email: user.email,
                         photo: user.photo,
                         role: user.role,
+                        token,
                     },
                 });
         }
 
-        // Create new user
         const usernameBase = name.split(' ').join('').toLowerCase();
         const uniqueUsername = `${usernameBase}${Math.random().toString(36).slice(-4)}`;
 
@@ -179,6 +180,7 @@ const oauthHandler = async (req, res, platform) => {
                     email: newUser.email,
                     photo: newUser.photo,
                     role: newUser.role,
+                    token,
                 },
             });
     } catch (err) {
@@ -191,16 +193,8 @@ const oauthHandler = async (req, res, platform) => {
     }
 };
 
-const googleOAuth = async (req, res) => {
-    await oauthHandler(req, res, 'google');
-};
-
-const facebookOAuth = async (req, res) => {
-    await oauthHandler(req, res, 'facebook');
-};
-
-const githubOAuth = async (req, res) => {
-    await oauthHandler(req, res, 'github');
-};
+const googleOAuth = async (req, res) => oauthHandler(req, res, 'Google');
+const facebookOAuth = async (req, res) => oauthHandler(req, res, 'Facebook');
+const githubOAuth = async (req, res) => oauthHandler(req, res, 'GitHub');
 
 module.exports = { register, login, googleOAuth, facebookOAuth, githubOAuth };

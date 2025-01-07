@@ -21,6 +21,10 @@ const nav_links = [
   },
 ];
 
+const truncateText = (text, maxLength) => {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+};
+
 const Header = () => {
   const headerRef = useRef(null);
   const menuRef = useRef(null);
@@ -32,23 +36,31 @@ const Header = () => {
     navigate('/');
   };
 
-  const stickyHeaderFunc = () => {
-    window.addEventListener('scroll', () => {
+  const handleScroll = () => {
+    if (headerRef.current) {
       if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
         headerRef.current.classList.add('sticky_header');
       } else {
         headerRef.current.classList.remove('sticky_header');
       }
-    });
+    }
   };
 
   useEffect(() => {
-    stickyHeaderFunc();
+    // Attach scroll event listener
+    window.addEventListener('scroll', handleScroll);
 
-    return () => window.removeEventListener('scroll', stickyHeaderFunc);
-  });
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
-  const toggleMenu = () => menuRef.current.classList.toggle('show__menu');
+  const toggleMenu = () => {
+    if (menuRef.current) {
+      menuRef.current.classList.toggle('show__menu');
+    }
+  };
 
   return (
     <header className="header" ref={headerRef}>
@@ -90,7 +102,9 @@ const Header = () => {
               <div className="nav_btns d-flex align-items-center gap-4">
                 {user ? (
                   <>
-                    <h5 className="mb-0">{user.username || user.email}</h5>
+                    <h5 className="mb-0">
+                      {truncateText(user.username || user.email, 18)}
+                    </h5>
                     <Button className="btn btn-danger text-white" onClick={logout}>
                       Logout
                     </Button>

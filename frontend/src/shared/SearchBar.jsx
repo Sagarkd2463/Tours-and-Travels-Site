@@ -3,7 +3,7 @@ import { Col, Form, FormGroup } from 'reactstrap';
 import '../styles/Search-bar.css';
 import { BASE_URL } from './../utils/config';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const SearchBar = () => {
 
@@ -72,8 +72,6 @@ const SearchBar = () => {
                     </span>
                 </Form>
             </div>
-
-            <ToastContainer />
         </Col>
     );
 };

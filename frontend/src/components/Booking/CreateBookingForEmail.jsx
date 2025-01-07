@@ -4,7 +4,7 @@ import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const Booking = ({ tour, avgRating }) => {
@@ -70,7 +70,6 @@ const Booking = ({ tour, avgRating }) => {
 
     return (
         <div className='booking'>
-            <ToastContainer />
             <div className="booking__top d-flex align-items-center justify-content-between">
                 <h3>${price} <span>/per person</span></h3>
                 <span className="tour__rating d-flex align-items-center">

@@ -9,7 +9,7 @@ import Newsletter from '../shared/Newsletter';
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
 import { AuthContext } from '../context/AuthContext';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const TourDetails = () => {
 
@@ -179,8 +179,6 @@ const TourDetails = () => {
             </section>
 
             <Newsletter />
-
-            <ToastContainer />
         </>
     );
 };

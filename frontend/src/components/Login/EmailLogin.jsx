@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Container, Col, Row, Form, FormGroup, ButtonGroup } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import '../../styles/Login.css';
 import { BASE_URL } from '../../utils/config';
 
@@ -98,8 +98,6 @@ const EmailPasswordLogin = () => {
                     </Col>
                 </Row>
             </Container>
-
-            <ToastContainer />
         </section>
     );
 };

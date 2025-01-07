@@ -6,7 +6,7 @@ import '../styles/Register.css';
 import userIcon from '../assets/images/user.png';
 import { AuthContext } from '../context/AuthContext';
 import { BASE_URL } from '../utils/config';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const Register = () => {
     const [credentials, setCredentials] = useState({
@@ -119,8 +119,6 @@ const Register = () => {
                     </Col>
                 </Row>
             </Container>
-
-            <ToastContainer />
         </section>
     );
 };

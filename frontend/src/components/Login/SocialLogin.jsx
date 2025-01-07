@@ -3,8 +3,9 @@ import { Button } from 'reactstrap';
 import { GoogleAuthProvider, GithubAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import { AuthContext } from '../../context/AuthContext';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import '../../styles/Login.css';
+import { BASE_URL } from '../../utils/config';
 
 const FirebaseSocialLogin = () => {
     const { dispatch } = useContext(AuthContext);
@@ -32,23 +33,30 @@ const FirebaseSocialLogin = () => {
                 }),
             });
 
-            if (!response.ok) throw new Error('Authentication with the backend failed.');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Authentication with the backend failed.');
+            }
 
             const data = await response.json();
 
-            localStorage.setItem('accessToken', data.token);
+            if (data.success) {
+                localStorage.setItem('accessToken', data.data.token);
 
-            dispatch({
-                type: "LOGIN_SUCCESS",
-                payload: {
-                    firebaseUid: result.user.uid,
-                    _id: data.data?.id,
-                    email: result.user.email,
-                    displayName: result.user.displayName || result.user.email,
-                },
-            });
+                dispatch({
+                    type: "LOGIN_SUCCESS",
+                    payload: {
+                        firebaseUid: result.user.uid,
+                        _id: data.data?.id,
+                        email: result.user.email,
+                        displayName: result.user.displayName || result.user.email,
+                    },
+                });
 
-            toast.success(`Welcome, ${result.user.displayName || result.user.email}!`);
+                toast.success(`Welcome, ${result.user.displayName || result.user.email}!`);
+            } else {
+                throw new Error(data.message || 'Unknown error occurred.');
+            }
         } catch (error) {
             if (error.code === 'auth/account-exists-with-different-credential') {
                 toast.error(
@@ -64,9 +72,9 @@ const FirebaseSocialLogin = () => {
         }
     };
 
-    const handleGoogleClick = () => handleSocialLogin(new GoogleAuthProvider(), '/api/v1/auth/google');
-    const handleFacebookClick = () => handleSocialLogin(new FacebookAuthProvider(), '/api/v1/auth/facebook');
-    const handleGithubClick = () => handleSocialLogin(new GithubAuthProvider(), '/api/v1/auth/github');
+    const handleGoogleClick = () => handleSocialLogin(new GoogleAuthProvider(), `${BASE_URL}/auth/google`);
+    const handleFacebookClick = () => handleSocialLogin(new FacebookAuthProvider(), `${BASE_URL}/auth/facebook`);
+    const handleGithubClick = () => handleSocialLogin(new GithubAuthProvider(), `${BASE_URL}/auth/github`);
 
     return (
         <div className="social-login d-flex flex-column align-items-start mt-4">
@@ -90,8 +98,6 @@ const FirebaseSocialLogin = () => {
                 <i className="fab fa-facebook me-3"></i>
                 <span>Login with Facebook</span>
             </Button>
-
-            <ToastContainer />
         </div>
     );
 };

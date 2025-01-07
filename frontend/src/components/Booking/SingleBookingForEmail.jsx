@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Button } from 'reactstrap';
 import '../../styles/SingleBooking.css';
 import axios from 'axios';
@@ -86,7 +86,6 @@ const SingleBooking = () => {
 
     return (
         <div className="container my-5">
-            <ToastContainer />
             <h1 className="text-center mb-4" style={{ color: "#ff7e01" }}>Booking Details</h1>
             <div className="row">
                 <div className="col-md-6">
