@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import '../../styles/Booking.css';
-import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
+import { FormGroup, ListGroup, ListGroupItem } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
@@ -44,26 +44,34 @@ const Booking = ({ tour, avgRating }) => {
             return toast.error("Please select a valid date!");
         }
 
-        const accessToken = localStorage.getItem('accessToken');
-
         try {
-            const res = await axios.post(`${BASE_URL}/booking`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({ ...booking, totalAmount }),
-            });
-
-            const result = await res.json();
-            if (!res.ok) {
-                throw new Error(result.message || "Failed to make the booking.");
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                throw new Error("Access token is missing. Please log in again.");
             }
 
-            toast.success("Booking successful! Redirecting...");
-            setTimeout(() => navigate('/thank-you'), 1000);
+            const res = await axios.post(
+                `${BASE_URL}/booking/create`,
+                {
+                    ...booking,
+                    totalAmount,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            if (res.data.success) {
+                toast.success("Booking successful! Redirecting...");
+                setTimeout(() => navigate('/thank-you'), 1000);
+            } else {
+                throw new Error(res.data.message || "Failed to create the booking.");
+            }
         } catch (error) {
-            console.error("Booking Error:", error);
+            console.error("Booking Error:", error.message);
             toast.error(error.message || "An error occurred while making the booking.");
         }
     };
@@ -80,7 +88,7 @@ const Booking = ({ tour, avgRating }) => {
 
             <div className="booking__form">
                 <h5>Information</h5>
-                <Form onSubmit={handleSubmit}>
+                <form>
                     <FormGroup>
                         <input
                             type="text"
@@ -95,8 +103,9 @@ const Booking = ({ tour, avgRating }) => {
                             type="email"
                             placeholder='Email'
                             id='userEmail'
+                            value={booking.userEmail}
                             onChange={handleChange}
-                            required
+                            readOnly
                         />
                     </FormGroup>
                     <FormGroup>
@@ -119,11 +128,15 @@ const Booking = ({ tour, avgRating }) => {
                             type="number"
                             placeholder='Guests'
                             id='guestSize'
+                            value={booking.guestSize}
                             onChange={handleChange}
                             required
                         />
                     </FormGroup>
-                </Form>
+                    <button className='btn primary__btn w-100 mt-4 text-white' type='submit' onClick={handleSubmit}>
+                        Book Now
+                    </button>
+                </form>
             </div>
 
             <div className="booking__bottom">
@@ -143,9 +156,6 @@ const Booking = ({ tour, avgRating }) => {
                         <span>${totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
-                <Button className='btn primary__btn w-100 mt-4' onClick={handleSubmit}>
-                    Book Now
-                </Button>
             </div>
         </div>
     );

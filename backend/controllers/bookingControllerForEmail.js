@@ -2,7 +2,7 @@ const Booking = require('../models/Booking');
 
 const createBookingForEmail = async (req, res) => {
     try {
-        if (!req.user || !req.user.mongoId) {
+        if (!req.user) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
@@ -71,9 +71,7 @@ const getAllBookingForEmail = async (req, res) => {
             });
         }
 
-        const formattedUserId = typeof userId === "string" ? userId : userId.toString();
-
-        const bookings = await Booking.find({ userId: formattedUserId }).populate('userId', 'email');
+        const bookings = await Booking.find({ userId }).populate('userId', 'email');
 
         if (!bookings || bookings.length === 0) {
             return res.status(404).json({

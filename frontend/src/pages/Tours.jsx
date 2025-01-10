@@ -7,11 +7,13 @@ import Newsletter from '../shared/Newsletter';
 import { Col, Container, Row } from 'reactstrap';
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
+import { useNavigate } from "react-router-dom";
 
 const Tours = () => {
 
     const [pageCount, setPageCount] = useState(0);
     const [page, setPage] = useState(0);
+    const navigate = useNavigate();
 
     const { data: tours, loading, error } = useFetch(`${BASE_URL}/tours?page=${page}`);
     const { data: tourCount } = useFetch(`${BASE_URL}/tours/search/getTourCount`);
@@ -35,9 +37,26 @@ const Tours = () => {
 
             <section className='pt-0'>
                 <Container>
-                    {loading && <h4 className='text-center pt-5'>Loading.....</h4>}
+                    {loading &&
+                        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
 
-                    {error && <h4 className='text-center pt-5'>{error}</h4>}
+                    {error &&
+                        <div className="text-center mt-5">
+                            <p className="text-danger">Some problem in loading tours. Please try again!</p>
+                            <button
+                                className="btn mt-3"
+                                style={{ backgroundColor: "#faa935", color: "white" }}
+                                onClick={() => navigate("/home")}
+                            >
+                                Go to Home Page
+                            </button>
+                        </div>
+                    }
 
                     {
                         !loading && !error && <Row>

@@ -19,7 +19,7 @@ const FirebaseUserBookings = () => {
 
         const fetchBookings = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/booking?userId=${user.uid}`);
+                const response = await axios.get(`${BASE_URL}/booking/firebase-bookings?userId=${user.uid}`);
                 const data = await response.json();
                 setBookings(data.data || []);
             } catch (err) {

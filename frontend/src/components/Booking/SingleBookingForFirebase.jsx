@@ -21,7 +21,7 @@ const SingleBooking = () => {
 
         const fetchBookingDetails = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/booking/${bookingId}?userId=${user.uid}`);
+                const response = await axios.get(`${BASE_URL}/booking/firebase-booking/${bookingId}?userId=${user.uid}`);
                 const data = await response.json();
                 if (response.ok) {
                     setBooking(data.data); // Assuming your API returns the booking data here
