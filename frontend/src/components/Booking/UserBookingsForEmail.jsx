@@ -10,7 +10,7 @@ const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { user, dispatch } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,10 +22,13 @@ const UserBookings = () => {
         const fetchBookings = async () => {
             try {
                 setLoading(true);
+                setError(null);
 
                 const accessToken = localStorage.getItem("accessToken");
 
-                if (!accessToken) throw new Error("Token missing. Please log in.");
+                if (!accessToken) {
+                    throw new Error("Token missing. Please log in.");
+                }
 
                 const response = await axios.get(`${BASE_URL}/booking/user_bookings`, {
                     headers: {
@@ -35,24 +38,25 @@ const UserBookings = () => {
 
                 const data = response.data.data;
 
-                if (response.status === 404) {
-                    toast.info("No bookings found for these user");
-                } else if (response.data.success) {
+                if (response.data.success) {
+                    if (data.length === 0) {
+                        toast.info("No bookings found for this user.");
+                    }
                     setBookings(data);
                 } else {
                     throw new Error(response.data.message || "Failed to fetch bookings.");
                 }
-                setLoading(false);
             } catch (err) {
                 console.error("Error fetching bookings:", err.message);
+                setError(err.response?.data?.message || "Something went wrong.");
                 toast.error(err.response?.data?.message || "Something went wrong.");
-                setError(err.message);
+            } finally {
                 setLoading(false);
             }
         };
 
         fetchBookings();
-    }, [user, dispatch, navigate]);
+    }, [user, navigate]);
 
     if (loading) {
         return (
@@ -67,7 +71,7 @@ const UserBookings = () => {
     if (error) {
         return (
             <div className="text-center mt-5">
-                <p className="text-danger">Something went wrong. Please try again!</p>
+                <p className="text-danger">{error}</p>
                 <button
                     className="btn mt-3"
                     style={{ backgroundColor: "#faa935", color: "white" }}
@@ -83,7 +87,7 @@ const UserBookings = () => {
         <div className="container my-5">
             <h1 className="text-center mb-4" style={{ color: "#ff7e01" }}>Your Booked Tours</h1>
             <div className="row g-4">
-                {!loading && !error && bookings.map((booking) => (
+                {bookings.map((booking) => (
                     <div className="col-md-6 col-lg-4 g-3" key={booking._id}>
                         <div className="card shadow-sm h-100 border-custom border-2">
                             <div className="card-body">

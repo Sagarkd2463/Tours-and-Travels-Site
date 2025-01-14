@@ -32,21 +32,17 @@ const SingleBooking = () => {
                     },
                 });
 
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        toast.error("Session expired. Please log in again.");
-                        navigate('/login');
-                    } else {
-                        throw new Error("Failed to fetch booking details.");
-                    }
-                }
-
-                const data = await response.json();
-                setBooking(data.data);
+                setBooking(response.data.data);
             } catch (err) {
                 console.error("Error fetching booking:", err.message);
-                toast.error(err.message);
-                setError(err.message);
+
+                if (err.response) {
+                    toast.error(err.response.data.message || "Failed to fetch booking details.");
+                    setError(err.response.data.message);
+                } else {
+                    toast.error("Something went wrong!");
+                    setError("Something went wrong!");
+                }
             } finally {
                 setLoading(false);
             }

@@ -5,6 +5,7 @@ const bookingSchema = new mongoose.Schema(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
+            required: false,
         },
         firebaseUid: {
             type: String,
@@ -13,6 +14,7 @@ const bookingSchema = new mongoose.Schema(
         userEmail: {
             type: String,
             required: true,
+            index: true,
         },
         tourName: {
             type: String,

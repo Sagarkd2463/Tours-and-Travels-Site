@@ -6,7 +6,6 @@ const { verifyFirebaseToken } = require('../utils/verifyFirebaseToken');
 
 const router = express.Router();
 
-// Route-level middleware allows chaining multiple handlers
 router.post('/create', verifyUser, createBookingForEmail);
 router.get('/user_bookings', verifyUser, getAllBookingForEmail);
 router.get('/:id', verifyUser, getBookingForEmail);
