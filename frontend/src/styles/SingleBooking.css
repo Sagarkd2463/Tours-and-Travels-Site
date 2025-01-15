@@ -1,25 +1,24 @@
 .container {
-    max-width: 650px;
+    max-width: 700px;
 }
 
 .card {
-    border-radius: 10px;
-}
-
-.card-body {
-    padding: 2rem;
+    border-radius: 15px;
+    background-color: #f8f9fa;
 }
 
 .card-title {
-    font-size: 1.5rem;
-    color: #faa935;
+    font-size: 1.75rem;
+    color: #ff7e01;
+    margin-bottom: 1rem;
 }
 
-.card-text {
+.card-body ul li {
     font-size: 1rem;
+    line-height: 1.8;
     color: #495057;
 }
 
-.text-muted {
-    font-weight: bold;
+.btn {
+    font-weight: 600;
 }

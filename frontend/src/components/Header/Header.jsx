@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Container, Row } from 'reactstrap';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
 import { AuthContext } from '../../context/AuthContext';
+import { BASE_URL } from '../../utils/config';
 
 const nav_links = [
   {
@@ -30,6 +31,7 @@ const Header = () => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const { user, dispatch } = useContext(AuthContext);
+  const [hasBookings, setHasBookings] = useState(false);
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
@@ -47,14 +49,38 @@ const Header = () => {
   };
 
   useEffect(() => {
-    // Attach scroll event listener
     window.addEventListener('scroll', handleScroll);
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchUserBookings = async () => {
+      if (user) {
+        try {
+          const accessToken = localStorage.getItem("accessToken");
+
+          if (!accessToken) {
+            throw new Error("Token missing. Please log in.");
+          }
+
+          const response = await fetch(`${BASE_URL}/booking/user_bookings`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const data = await response.json();
+          setHasBookings(data && data.success && data.data.length > 0);
+        } catch (error) {
+          console.error('Error fetching bookings:', error);
+        }
+      }
+    };
+
+    fetchUserBookings();
+  }, [user]);
 
   const toggleMenu = () => {
     if (menuRef.current) {
@@ -84,8 +110,8 @@ const Header = () => {
                   </li>
                 ))}
 
-                {/* My Bookings (Visible for Logged-In Users Only) */}
-                {user && (
+                {/* My Bookings (Visible if user is logged in and has bookings) */}
+                {user && hasBookings && (
                   <li className="nav_item">
                     <NavLink
                       to="/bookings"

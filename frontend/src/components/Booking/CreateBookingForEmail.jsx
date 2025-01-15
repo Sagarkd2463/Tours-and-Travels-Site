@@ -13,13 +13,14 @@ const Booking = ({ tour, avgRating }) => {
     const { user } = useContext(AuthContext);
 
     const [booking, setBooking] = useState({
-        userId: user ? user._id : null, // MongoDB user ID
-        userEmail: user ? user.email : '', // Use email for authentication
+        userId: user ? user._id : null,
+        userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
         guestSize: 1,
-        bookedAt: '',
+        totalAmount: 0,
+        bookedAt: ''
     });
 
     const handleChange = (e) => {
@@ -54,7 +55,6 @@ const Booking = ({ tour, avgRating }) => {
                 `${BASE_URL}/booking/create`,
                 {
                     ...booking,
-                    totalAmount,
                 },
                 {
                     headers: {
@@ -143,17 +143,17 @@ const Booking = ({ tour, avgRating }) => {
                 <ListGroup>
                     <ListGroupItem className='border-0 px-0'>
                         <h5 className='d-flex align-items-center gap-1'>
-                            ${price} <i className='ri-close-line'></i> {booking.guestSize} person(s)
+                            Rs. {price} <i className='ri-close-line'></i> {booking.guestSize} person(s)
                         </h5>
-                        <span>${price * booking.guestSize}</span>
+                        <span>Rs. {price * booking.guestSize}</span>
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0'>
                         <h5>Service Fee</h5>
-                        <span>${serviceFee}</span>
+                        <span>Rs. {serviceFee}</span>
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0 total'>
                         <h5>Total</h5>
-                        <span>${totalAmount}</span>
+                        <span>Rs. {totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
             </div>

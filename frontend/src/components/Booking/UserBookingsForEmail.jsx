@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { BASE_URL } from "../../utils/config";
 import "../../styles/UserBookings.css";
 import axios from "axios";
+import { Button } from "reactstrap";
 
 const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -84,7 +85,7 @@ const UserBookings = () => {
     }
 
     return (
-        <div className="container my-5">
+        <div className="container my-7">
             <h1 className="text-center mb-4" style={{ color: "#ff7e01" }}>Your Booked Tours</h1>
             <div className="row g-4">
                 {bookings.map((booking) => (
@@ -94,35 +95,10 @@ const UserBookings = () => {
                                 <h5 className="card-title mb-3" style={{ color: "#faa935" }}>
                                     {booking.tourName}
                                 </h5>
-                                <p className="card-text">
-                                    <strong className="text-muted">Date: </strong>
-                                    <span className="text-dark">
-                                        {new Date(booking.bookedAt).toLocaleDateString("en-IN")}
-                                    </span>
-                                </p>
-                                <p className="card-text">
-                                    <strong className="text-muted">Name: </strong>
-                                    <span className="text-dark">{booking.fullName}</span>
-                                </p>
-                                <p className="card-text">
-                                    <strong className="text-muted">Email: </strong>
-                                    <span className="text-dark">{booking.userEmail}</span>
-                                </p>
-                                <p className="card-text">
-                                    <strong className="text-muted">Phone: </strong>
-                                    <span className="text-dark">{booking.phone}</span>
-                                </p>
-                                <p className="card-text">
-                                    <strong className="text-muted">Guests: </strong>
-                                    <span className="text-dark">{booking.guestSize}</span>
-                                </p>
-                                <p className="card-text">
-                                    <strong className="text-muted">Amount: </strong>
-                                    <span className="text-dark">${booking.totalAmount || 0}</span>
-                                </p>
+
                                 <div className="d-flex justify-content-between align-items-center">
                                     <button
-                                        className="btn btn-primary"
+                                        className="btn btn-primary border-0"
                                         style={{ backgroundColor: "#ff7e01" }}
                                         onClick={() => navigate(`/booking/${booking._id}`)}
                                     >
@@ -133,6 +109,15 @@ const UserBookings = () => {
                         </div>
                     </div>
                 ))}
+                <div className="mt-4 text-center">
+                    <Button
+                        color="primary"
+                        className="ps-4 pe-4"
+                        onClick={() => navigate('/home')}
+                    >
+                        Go Home
+                    </Button>
+                </div>
             </div>
         </div>
     );

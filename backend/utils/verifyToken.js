@@ -25,7 +25,7 @@ const verifyToken = (req, res, next) => {
 
 const verifyUser = (req, res, next) => {
     verifyToken(req, res, () => {
-        if (req.user && req.user?.email || req.user?.id || req.user?._id) {
+        if (req.user && req.user?.id || req.user?._id || req.user?.email) {
             next();
         } else {
             return res.status(401).json({ success: false, message: "Authentication required: User validation failed!" });
