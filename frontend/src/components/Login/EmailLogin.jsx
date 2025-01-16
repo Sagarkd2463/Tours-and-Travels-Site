@@ -54,7 +54,7 @@ const EmailPasswordLogin = () => {
                 },
             });
 
-            toast.success("Login successful!");
+            toast.success("Login successfull!!!");
             navigate('/');
         } catch (error) {
             console.error("Login error:", error.message);

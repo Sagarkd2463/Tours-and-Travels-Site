@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Button, Container, Row } from 'reactstrap';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
 import { AuthContext } from '../../context/AuthContext';
-import { BASE_URL } from '../../utils/config';
+import { toast } from 'react-toastify';
 
 const nav_links = [
   {
@@ -20,6 +20,10 @@ const nav_links = [
     path: '/tours',
     display: 'Tours',
   },
+  {
+    path: '/bookings',
+    display: 'My Bookings',
+  },
 ];
 
 const truncateText = (text, maxLength) => {
@@ -31,10 +35,10 @@ const Header = () => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const { user, dispatch } = useContext(AuthContext);
-  const [hasBookings, setHasBookings] = useState(false);
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
+    toast.success("Logged out...");
     navigate('/');
   };
 
@@ -56,32 +60,6 @@ const Header = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchUserBookings = async () => {
-      if (user) {
-        try {
-          const accessToken = localStorage.getItem("accessToken");
-
-          if (!accessToken) {
-            throw new Error("Token missing. Please log in.");
-          }
-
-          const response = await fetch(`${BASE_URL}/booking/user_bookings`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
-          const data = await response.json();
-          setHasBookings(data && data.success && data.data.length > 0);
-        } catch (error) {
-          console.error('Error fetching bookings:', error);
-        }
-      }
-    };
-
-    fetchUserBookings();
-  }, [user]);
-
   const toggleMenu = () => {
     if (menuRef.current) {
       menuRef.current.classList.toggle('show__menu');
@@ -101,26 +79,16 @@ const Header = () => {
               <ul className="menu d-flex align-items-center gap-5">
                 {nav_links.map((item, index) => (
                   <li className="nav_item" key={index}>
-                    <NavLink
-                      to={item.path}
-                      className={(navClass) => (navClass.isActive ? 'active_link' : '')}
-                    >
-                      {item.display}
-                    </NavLink>
+                    {(item.path !== '/bookings' || user) && (
+                      <NavLink
+                        to={item.path}
+                        className={(navClass) => (navClass.isActive ? 'active_link' : '')}
+                      >
+                        {item.display}
+                      </NavLink>
+                    )}
                   </li>
                 ))}
-
-                {/* My Bookings (Visible if user is logged in and has bookings) */}
-                {user && hasBookings && (
-                  <li className="nav_item">
-                    <NavLink
-                      to="/bookings"
-                      className={(navClass) => (navClass.isActive ? 'active_link' : '')}
-                    >
-                      My Bookings
-                    </NavLink>
-                  </li>
-                )}
               </ul>
             </div>
 

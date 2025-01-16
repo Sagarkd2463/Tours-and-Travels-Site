@@ -78,7 +78,7 @@ const SingleBooking = () => {
                 <p><strong>Phone:</strong> {booking.phone}</p>
                 <p><strong>Guests:</strong> {booking.guestSize}</p>
                 <p><strong>Booked Date:</strong> {new Date(booking.bookedAt).toLocaleDateString()}</p>
-                <p><strong>Total Amount:</strong> ${booking.totalAmount}</p>
+                <p><strong>Total Amount:</strong> Rs. {booking.totalAmount}</p>
             </div>
 
             <div className="actions">

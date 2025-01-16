@@ -79,7 +79,7 @@ const Booking = ({ tour, avgRating }) => {
     return (
         <div className='booking'>
             <div className="booking__top d-flex align-items-center justify-content-between">
-                <h3>${price} <span>/per person</span></h3>
+                <h3>Rs. {price} <span>/per person</span></h3>
                 <span className="tour__rating d-flex align-items-center">
                     <i className="ri-star-fill"></i>
                     {avgRating || 0} ({reviews?.length || 0})

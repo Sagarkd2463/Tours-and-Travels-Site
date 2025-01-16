@@ -42,7 +42,7 @@ const getAllBookingForEmail = async (req, res) => {
         const bookings = await Booking.find({ userEmail: email });
 
         if (!bookings.length) {
-            return res.status(404).json({ success: false, message: "No bookings found for the user." });
+            return res.json({ success: false, message: "No bookings found for the user." });
         }
 
         res.status(200).json({ success: true, data: bookings });
@@ -69,7 +69,7 @@ const getBookingForEmail = async (req, res) => {
         const booking = await Booking.findById(id);
 
         if (!booking) {
-            return res.status(404).json({ success: false, message: "Booking not found!" });
+            return res.json({ success: false, message: "Booking not found!" });
         }
 
         res.status(200).json({ success: true, data: booking });
@@ -99,7 +99,7 @@ const updateBookingForEmail = async (req, res) => {
         });
 
         if (!updatedBooking) {
-            return res.status(404).json({ success: false, message: "Booking not found!" });
+            return res.json({ success: false, message: "Booking not found for updating details!" });
         }
 
         res.status(200).json({ success: true, message: "Booking updated successfully!", data: updatedBooking });
@@ -126,7 +126,7 @@ const deleteBookingForEmail = async (req, res) => {
         const deletedBooking = await Booking.findByIdAndDelete(id);
 
         if (!deletedBooking) {
-            return res.status(404).json({ success: false, message: "Booking not found!" });
+            return res.json({ success: false, message: "Booking not found!" });
         }
 
         res.status(200).json({ success: true, message: "Booking deleted successfully!" });

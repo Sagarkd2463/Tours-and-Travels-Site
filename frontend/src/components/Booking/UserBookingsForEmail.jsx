@@ -48,9 +48,7 @@ const UserBookings = () => {
                     throw new Error(response.data.message || "Failed to fetch bookings.");
                 }
             } catch (err) {
-                console.error("Error fetching bookings:", err.message);
                 setError(err.response?.data?.message || "Something went wrong.");
-                toast.error(err.response?.data?.message || "Something went wrong.");
             } finally {
                 setLoading(false);
             }
@@ -69,10 +67,10 @@ const UserBookings = () => {
         );
     }
 
-    if (error) {
+    if (error || !bookings) {
         return (
             <div className="text-center mt-5">
-                <p className="text-danger">{error}</p>
+                <p className='text-danger fs-4 fw-bold fst-italic'>No bookings available, Please book a tour!!!</p>
                 <button
                     className="btn mt-3"
                     style={{ backgroundColor: "#faa935", color: "white" }}
@@ -111,7 +109,7 @@ const UserBookings = () => {
                 ))}
                 <div className="mt-4 text-center">
                     <Button
-                        color="primary"
+                        style={{ backgroundColor: "#ff7e01" }}
                         className="ps-4 pe-4"
                         onClick={() => navigate('/home')}
                     >

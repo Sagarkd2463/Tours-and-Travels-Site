@@ -14,7 +14,6 @@ const FirebaseBooking = ({ tour, avgRating }) => {
 
     const [booking, setBooking] = useState({
         userId: user ? user.uid : null, // Firebase UID
-        userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
@@ -45,17 +44,19 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         }
 
         try {
-            const res = await axios.post(`${BASE_URL}/booking/firebase-create`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...booking, totalAmount }),
-            });
+            const accessToken = localStorage.getItem('accessToken');
 
-            const result = await res.json();
-            if (!res.ok) {
-                throw new Error(result.message || "Failed to make the booking.");
+            if (!accessToken) {
+                throw new Error("Access token is missing. Please log in again.");
             }
+
+            await axios.post(`${BASE_URL}/booking/firebase-create`, {
+                ...booking,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
 
             toast.success("Booking successful! Redirecting...");
             setTimeout(() => navigate('/thank-you'), 1000);
@@ -68,7 +69,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
     return (
         <div className='booking'>
             <div className="booking__top d-flex align-items-center justify-content-between">
-                <h3>${price} <span>/per person</span></h3>
+                <h3>Rs. {price} <span>/per person</span></h3>
                 <span className="tour__rating d-flex align-items-center">
                     <i className="ri-star-fill"></i>
                     {avgRating || 0} ({reviews?.length || 0})
@@ -83,15 +84,6 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             type="text"
                             placeholder='Full Name'
                             id='fullName'
-                            onChange={handleChange}
-                            required
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <input
-                            type="email"
-                            placeholder='Email'
-                            id='userEmail'
                             onChange={handleChange}
                             required
                         />
@@ -127,17 +119,17 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                 <ListGroup>
                     <ListGroupItem className='border-0 px-0'>
                         <h5 className='d-flex align-items-center gap-1'>
-                            ${price} <i className='ri-close-line'></i> {booking.guestSize} person(s)
+                            Rs. {price} <i className='ri-close-line'></i> {booking.guestSize} person(s)
                         </h5>
-                        <span>${price * booking.guestSize}</span>
+                        <span>Rs. {price * booking.guestSize}</span>
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0'>
                         <h5>Service Fee</h5>
-                        <span>${serviceFee}</span>
+                        <span>Rs. {serviceFee}</span>
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0 total'>
                         <h5>Total</h5>
-                        <span>${totalAmount}</span>
+                        <span>Rs. {totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
                 <Button className='btn primary__btn w-100 mt-4' onClick={handleSubmit}>

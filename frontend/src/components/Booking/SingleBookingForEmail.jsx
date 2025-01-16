@@ -37,13 +37,10 @@ const SingleBooking = () => {
                 const fetchedBooking = response.data.data;
                 setBooking(fetchedBooking);
             } catch (err) {
-                console.error("Error fetching booking:", err.message);
-
                 if (err.response) {
                     toast.error(err.response.data.message || "Failed to fetch booking details.");
                     setError(err.response.data.message);
                 } else {
-                    toast.error("Something went wrong!");
                     setError("Something went wrong!");
                 }
             } finally {
@@ -68,7 +65,6 @@ const SingleBooking = () => {
             setBooking({ ...booking, ...editData });
             setEditModalOpen(false);
         } catch (err) {
-            console.error("Error updating booking:", err.message);
             toast.error(err.response?.data?.message || "Failed to update booking.");
         }
     };
@@ -86,7 +82,6 @@ const SingleBooking = () => {
             toast.success("Booking deleted successfully!");
             navigate('/bookings');
         } catch (err) {
-            console.error("Error deleting booking:", err.message);
             toast.error(err.response?.data?.message || "Failed to delete booking.");
         }
     };
@@ -101,10 +96,10 @@ const SingleBooking = () => {
         );
     }
 
-    if (error) {
+    if (error || !booking) {
         return (
             <div className="text-center mt-5">
-                <p className="text-danger">{error}</p>
+                <p className='text-danger fs-4 fw-bold fst-italic'>No Booking Found, Please visit tours or try again!!!</p>
                 <button
                     className="btn mt-3 btn-warning"
                     onClick={() => navigate("/tours")}
@@ -113,10 +108,6 @@ const SingleBooking = () => {
                 </button>
             </div>
         );
-    }
-
-    if (!booking) {
-        return <div className="text-center mt-5"><p>No booking found.</p></div>;
     }
 
     return (
@@ -137,7 +128,7 @@ const SingleBooking = () => {
             </div>
             <div className="mt-4 text-end">
                 <Button
-                    color="primary"
+                    color="success"
                     className="me-2"
                     onClick={() => {
                         setEditModalOpen(true);
@@ -154,7 +145,7 @@ const SingleBooking = () => {
                 </Button>
 
                 <Button
-                    color="dark"
+                    style={{ backgroundColor: "#ff7e01" }}
                     onClick={() => navigate('/bookings')}>
                     Go to Bookings
                 </Button>
@@ -269,14 +260,14 @@ const SingleBooking = () => {
                     <Button
                         color="primary"
                         onClick={handleUpdate}
-                        className="px-4 rounded-pill"
+                        className="px-4 rounded"
                     >
                         Save Changes
                     </Button>
                     <Button
                         color="secondary"
                         onClick={() => setEditModalOpen(false)}
-                        className="px-4 rounded-pill"
+                        className="px-4 rounded"
                     >
                         Cancel
                     </Button>

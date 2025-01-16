@@ -11,8 +11,7 @@ const createBookingForFirebase = async (req, res) => {
 
         const bookingData = {
             ...req.body,
-            userId: req.user.uid,  // Firebase UID
-            userEmail: req.user.email,
+            userId: req.user.uid, // Firebase UID
             bookedAt: new Date(req.body.bookedAt), // Validate date if needed
         };
 
@@ -42,7 +41,7 @@ const getAllBookingForFirebase = async (req, res) => {
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.uid }).populate('userId', 'email');
+        const bookings = await Booking.find({ userId: req.user.uid });
 
         res.status(200).json({
             success: true,
@@ -59,7 +58,7 @@ const getAllBookingForFirebase = async (req, res) => {
 
 const getBookingForFirebase = async (req, res) => {
     try {
-        const booking = await Booking.findById(req.params.id).populate('userId', 'email');
+        const booking = await Booking.findById(req.params.id);
 
         if (!booking) {
             return res.status(404).json({

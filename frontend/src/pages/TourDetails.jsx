@@ -107,7 +107,7 @@ const TourDetails = () => {
 
                                         <span>
                                             <i className='ri-money-dollar-circle-line'></i>
-                                            $ {price} per person
+                                            Rs. {price} per person
                                         </span>
 
                                         <span>
