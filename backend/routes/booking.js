@@ -3,7 +3,7 @@ const { createBookingForEmail, getAllBookingForEmail, getBookingForEmail, update
     require('../controllers/bookingControllerForEmail');
 const { verifyUser } = require('../utils/verifyToken');
 const { createBookingForFirebase, getAllBookingForFirebase, getBookingForFirebase } = require('../controllers/bookingControllerForFirebase');
-const { verifyFirebaseToken } = require('../utils/verifyFirebaseToken');
+const { verifyFirebaseUser } = require('../utils/verifyFirebaseToken');
 
 const router = express.Router();
 
@@ -13,8 +13,8 @@ router.get('/:id', verifyUser, getBookingForEmail);
 router.put('/:id', verifyUser, updateBookingForEmail);
 router.delete('/:id', verifyUser, deleteBookingForEmail);
 
-router.post('/firebase-create', verifyFirebaseToken, createBookingForFirebase);
-router.get('/firebase-bookings', verifyFirebaseToken, getAllBookingForFirebase);
-router.get('/firebase-booking/:id', verifyFirebaseToken, getBookingForFirebase);
+router.post('/firebase-create', verifyFirebaseUser, createBookingForFirebase);
+router.get('/firebase-bookings', verifyFirebaseUser, getAllBookingForFirebase);
+router.get('/firebase-booking/:id', verifyFirebaseUser, getBookingForFirebase);
 
 module.exports = router;

@@ -5,8 +5,6 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-
-
 router.post('/google', googleOAuth);
 router.post('/facebook', facebookOAuth);
 router.post('/github', githubOAuth);

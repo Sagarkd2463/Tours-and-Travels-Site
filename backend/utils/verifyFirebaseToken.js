@@ -20,4 +20,15 @@ const verifyFirebaseToken = async (req, res, next) => {
     }
 };
 
-module.exports = { verifyFirebaseToken };
+const verifyFirebaseUser = (req, res, next) => {
+    verifyFirebaseToken(req, res, () => {
+        if (req.user && req.user?.uid || req.user?.email) {
+            next();
+        } else {
+            return res.status(401).json({ success: false, message: "Authentication required: User validation failed!" });
+        }
+    });
+};
+
+
+module.exports = { verifyFirebaseToken, verifyFirebaseUser };
