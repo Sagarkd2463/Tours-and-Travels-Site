@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Button, Container, Row } from 'reactstrap';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
 import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
-import { toast } from 'react-toastify';
 
 const nav_links = [
     { path: '/home', display: 'Home' },
@@ -17,19 +17,20 @@ const nav_links = [
 const FirebaseHeader = () => {
     const headerRef = useRef(null);
     const menuRef = useRef(null);
-    const { user } = useContext(AuthFirebaseContext);
-
-    const handleScroll = () => {
-        if (headerRef.current) {
-            if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
-                headerRef.current.classList.add('sticky_header');
-            } else {
-                headerRef.current.classList.remove('sticky_header');
-            }
-        }
-    };
+    const { user, logout } = useContext(AuthFirebaseContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const handleScroll = () => {
+            if (headerRef.current) {
+                if (document.documentElement.scrollTop > 80) {
+                    headerRef.current.classList.add('sticky_header');
+                } else {
+                    headerRef.current.classList.remove('sticky_header');
+                }
+            }
+        };
+
         window.addEventListener('scroll', handleScroll);
         return () => {
             window.removeEventListener('scroll', handleScroll);
@@ -42,14 +43,13 @@ const FirebaseHeader = () => {
         }
     };
 
-    const truncateText = (text, maxLength) => {
-        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
-    };
-
-    const logout = () => {
-        toast.success("Logged out...");
+    const handleLogout = () => {
+        logout();
+        toast.success('Logged out successfully');
         navigate('/');
     };
+
+    const truncateText = (text, maxLength) => text?.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
     return (
         <header className="header" ref={headerRef}>
@@ -82,21 +82,21 @@ const FirebaseHeader = () => {
                                 {user ? (
                                     <>
                                         <h5 className="mb-0">
-                                            {truncateText(user.username || user.email, 18)}
+                                            {truncateText(user.displayName || user.email, 18)}
                                         </h5>
-                                        <Button className="btn btn-danger text-white" onClick={logout}>
+                                        <Button className="btn btn-danger text-white" onClick={handleLogout}>
                                             Logout
                                         </Button>
                                     </>
                                 ) : (
                                     <>
                                         <Button className="btn btn-warning border-0 rounded-2">
-                                            <Link to={'/login'} className="text-decoration-none text-white">
+                                            <Link to="/login" className="text-decoration-none text-white">
                                                 Login
                                             </Link>
                                         </Button>
                                         <Button className="btn btn-primary border-0 rounded-2">
-                                            <Link to={'/register'} className="text-decoration-none text-white">
+                                            <Link to="/register" className="text-decoration-none text-white">
                                                 Register
                                             </Link>
                                         </Button>
