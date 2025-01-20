@@ -1,13 +1,21 @@
 import React, { createContext, useReducer, useEffect } from 'react';
-import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider, facebookProvider, githubProvider } from '../utils/firebase';
 import { authCases } from './constants';
 
+const safeParse = (item) => {
+    try {
+        return JSON.parse(item);
+    } catch {
+        return null;
+    }
+};
+
 const initialState = {
-    Fuser: JSON.parse(localStorage.getItem('Fuser')) || null,
-    accessToken: localStorage.getItem('accessToken') || null,
+    Fuser: safeParse(localStorage.getItem('Fuser')) || null,
     loading: false,
     error: null,
+    access_Token: safeParse(localStorage.getItem('access_Token')) || null,
 };
 
 export const AuthFirebaseContext = createContext(initialState);
@@ -17,16 +25,16 @@ const AuthReducer = (state, action) => {
         case authCases.LOGIN_START:
             return { ...state, loading: true, error: null };
         case authCases.LOGIN_SUCCESS:
-            const { user, accessToken } = action.payload;
+            const { user, access_Token } = action.payload;
             localStorage.setItem('Fuser', JSON.stringify(user));
-            localStorage.setItem('accessToken', accessToken);
-            return { user, accessToken, loading: false, error: null };
+            localStorage.setItem('access_Token', access_Token);
+            return { Fuser: user, access_Token, loading: false, error: null };
         case authCases.LOGIN_FAILURE:
             return { ...state, loading: false, error: action.payload };
         case authCases.LOGOUT:
             localStorage.removeItem('Fuser');
-            localStorage.removeItem('accessToken');
-            return { user: null, accessToken: null, loading: false, error: null };
+            localStorage.removeItem('access_Token');
+            return { Fuser: null, access_Token: null, loading: false, error: null };
         default:
             return state;
     }
@@ -45,7 +53,7 @@ export const AuthFirebaseContextProvider = ({ children }) => {
                     email: user.email || '',
                     photoURL: user.photoURL || '',
                 };
-                dispatch({ type: authCases.LOGIN_SUCCESS, payload: { user: userData, accessToken: token } });
+                dispatch({ type: authCases.LOGIN_SUCCESS, payload: { user: userData, access_Token: token } });
             } else {
                 dispatch({ type: authCases.LOGOUT });
             }
@@ -65,24 +73,28 @@ export const AuthFirebaseContextProvider = ({ children }) => {
                 email: result.user.email || '',
                 photoURL: result.user.photoURL || '',
             };
-            dispatch({ type: authCases.LOGIN_SUCCESS, payload: { user: userData, accessToken: token } });
+            dispatch({ type: authCases.LOGIN_SUCCESS, payload: { user: userData, access_Token: token } });
         } catch (error) {
             dispatch({ type: authCases.LOGIN_FAILURE, payload: error.message });
         }
     };
 
     const logout = async () => {
-        await auth.signOut();
-        dispatch({ type: authCases.LOGOUT });
+        try {
+            await signOut(auth);
+            dispatch({ type: authCases.LOGOUT });
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
 
     return (
         <AuthFirebaseContext.Provider
             value={{
                 Fuser: state.Fuser,
-                accessToken: state.accessToken,
                 loading: state.loading,
                 error: state.error,
+                access_Token: state.access_Token,
                 loginWithGoogle: () => loginWithProvider(googleProvider),
                 loginWithFacebook: () => loginWithProvider(facebookProvider),
                 loginWithGithub: () => loginWithProvider(githubProvider),

@@ -106,7 +106,7 @@ const oauthHandler = async (req, res, platform) => {
             });
         }
 
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ firebaseUid });
 
         if (user) {
             if (user.authProvider !== platform) {
@@ -137,7 +137,7 @@ const oauthHandler = async (req, res, platform) => {
             { expiresIn: '15d' }
         );
 
-        res.cookie('accessToken', token, {
+        res.cookie('access_Token', token, {
             httpOnly: true,
             expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
         }).status(200).json({
@@ -154,6 +154,8 @@ const oauthHandler = async (req, res, platform) => {
         });
     } catch (err) {
         console.error(`${platform} OAuth Error:`, err.message);
+
+        res.clearCookie('access_Token');
         res.status(500).json({
             success: false,
             message: `Failed to authenticate via ${platform}.`,

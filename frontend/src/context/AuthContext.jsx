@@ -1,11 +1,20 @@
 import { createContext, useReducer, useEffect } from 'react';
 import { authCases } from './constants';
 
+// Utility function to safely parse JSON
+const safeParse = (item) => {
+    try {
+        return JSON.parse(item);
+    } catch {
+        return null;
+    }
+};
+
 const initialState = {
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: safeParse(localStorage.getItem('user')) || null,
     loading: false,
     error: null,
-    accessToken: localStorage.getItem('accessToken') || null,
+    accessToken: safeParse(localStorage.getItem('accessToken')) || null,
 };
 
 export const AuthContext = createContext(initialState);
@@ -13,48 +22,18 @@ export const AuthContext = createContext(initialState);
 const AuthReducer = (state, action) => {
     switch (action.type) {
         case authCases.LOGIN_START:
-            return {
-                ...state,
-                loading: true,
-                error: null,
-            };
-
+            return { ...state, loading: true, error: null };
         case authCases.LOGIN_SUCCESS:
             const { token, ...userDetails } = action.payload;
-
-            return {
-                ...state,
-                user: userDetails,
-                accessToken: token,
-                loading: false,
-                error: null,
-            };
-
+            localStorage.setItem('user', JSON.stringify(userDetails));
+            localStorage.setItem('accessToken', token);
+            return { ...state, user: userDetails, accessToken: token, loading: false, error: null };
         case authCases.LOGIN_FAILURE:
-            return {
-                user: null,
-                accessToken: null,
-                loading: false,
-                error: action.payload,
-            };
-
-        case authCases.REGISTER_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                error: null,
-            };
-
+            return { user: null, accessToken: null, loading: false, error: action.payload };
         case authCases.LOGOUT:
             localStorage.removeItem('user');
             localStorage.removeItem('accessToken');
-            return {
-                user: null,
-                accessToken: null,
-                loading: false,
-                error: null,
-            };
-
+            return { user: null, accessToken: null, loading: false, error: null };
         default:
             return state;
     }
@@ -77,6 +56,10 @@ export const AuthContextProvider = ({ children }) => {
         }
     }, [state.user, state.accessToken]);
 
+    const logout = () => {
+        dispatch({ type: authCases.LOGOUT });
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -85,6 +68,7 @@ export const AuthContextProvider = ({ children }) => {
                 loading: state.loading,
                 error: state.error,
                 dispatch,
+                logout,
             }}
         >
             {children}

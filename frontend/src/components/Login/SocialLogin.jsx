@@ -20,7 +20,6 @@ const FirebaseSocialLogin = () => {
                 return;
             }
 
-            // Send the user details to the backend for further processing
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -42,7 +41,8 @@ const FirebaseSocialLogin = () => {
             const data = await response.json();
 
             if (data.success) {
-                localStorage.setItem('accessToken', data.data.token);
+                localStorage.setItem('access_Token', data.data.token);
+                localStorage.setItem('Fuser', JSON.stringify(data.data));
 
                 toast.success(`Welcome, ${result.user.displayName || result.user.email}!`);
                 navigate('/');
@@ -58,6 +58,8 @@ const FirebaseSocialLogin = () => {
             } else {
                 toast.error(error.message);
             }
+
+            document.cookie = "access_Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
             console.error("Social login error:", error.message);
         }
