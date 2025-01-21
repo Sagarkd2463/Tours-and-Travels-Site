@@ -85,6 +85,7 @@ export const AuthFirebaseContextProvider = ({ children }) => {
             dispatch({ type: authCases.LOGOUT });
         } catch (error) {
             console.error('Error logging out:', error);
+            dispatch({ type: authCases.LOGIN_FAILURE, payload: error.message });
         }
     };
 

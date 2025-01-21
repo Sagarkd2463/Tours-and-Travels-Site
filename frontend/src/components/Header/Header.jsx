@@ -43,7 +43,7 @@ const Header = ({ activeUser, onLogout }) => {
     }
   };
 
-  const handleLogout = () => {
+  const handleSignOut = () => {
     if (activeUser) {
       onLogout();
       toast.success('Logged out successfully.');
@@ -87,7 +87,7 @@ const Header = ({ activeUser, onLogout }) => {
                         18
                       )}
                     </h5>
-                    <Button className="btn btn-danger text-white" onClick={handleLogout}>
+                    <Button className="btn btn-danger text-white" onClick={handleSignOut}>
                       Logout
                     </Button>
                   </>

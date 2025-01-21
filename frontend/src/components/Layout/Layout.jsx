@@ -6,15 +6,19 @@ import { AuthContext } from '../../context/AuthContext';
 import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
 
 const Layout = () => {
-  const { user, logout: logoutAuthContext } = useContext(AuthContext);
-  const { Fuser, logout: logoutFirebase } = useContext(AuthFirebaseContext);
+  const { user, emailLogout } = useContext(AuthContext);
+  const { Fuser, firebaseLogout } = useContext(AuthFirebaseContext);
 
   // Determine the active user
   const activeUser = user || Fuser;
 
   const handleLogout = () => {
-    if (user) logoutAuthContext(); // Logout from local context
-    if (Fuser) logoutFirebase(); // Logout from Firebase context
+    try {
+      if (user) emailLogout();
+      if (Fuser) firebaseLogout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (
