@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { Button, Container, Row } from 'reactstrap';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout as firebaseLogout } from '../../redux/firebaseAuthSlice';
 import logo from '../../assets/images/logo.png';
 import '../../styles/Header.css';
+import { AuthContext } from '../../context/AuthContext';
 
 const nav_links = [
   { path: '/home', display: 'Home' },
@@ -15,10 +18,28 @@ const nav_links = [
 const truncateText = (text, maxLength) =>
   text?.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
-const Header = ({ activeUser, onLogout }) => {
+const Header = () => {
   const headerRef = useRef(null);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  const { user: contextUser, logout: contextLogout } = useContext(AuthContext);
+  const { user: firebaseUser } = useSelector((state) => state.Fuser);
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    if (firebaseUser) {
+      dispatch(firebaseLogout());
+      toast.success('Logged out successfully...');
+      navigate('/');
+    } else if (contextUser) {
+      contextLogout();
+      toast.success('Logged out successfully...');
+      navigate('/');
+    }
+  };
+
+  const currentUser = firebaseUser || contextUser;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,14 +64,6 @@ const Header = ({ activeUser, onLogout }) => {
     }
   };
 
-  const handleSignOut = () => {
-    if (activeUser) {
-      onLogout();
-      toast.success('Logged out successfully.');
-      navigate('/');
-    }
-  };
-
   return (
     <header className="header" ref={headerRef}>
       <Container>
@@ -64,7 +77,7 @@ const Header = ({ activeUser, onLogout }) => {
               <ul className="menu d-flex align-items-center gap-5">
                 {nav_links.map((item, index) => (
                   <li className="nav_item" key={index}>
-                    {(item.path !== '/bookings' || activeUser) && (
+                    {(item.path !== '/bookings' || currentUser) && (
                       <NavLink
                         to={item.path}
                         className={(navClass) => (navClass.isActive ? 'active_link' : '')}
@@ -79,15 +92,15 @@ const Header = ({ activeUser, onLogout }) => {
 
             <div className="nav_right d-flex align-items-center gap-4">
               <div className="nav_btns d-flex align-items-center gap-4">
-                {activeUser ? (
+                {currentUser ? (
                   <>
                     <h5 className="mb-0">
                       {truncateText(
-                        activeUser.displayName || activeUser.username || activeUser.email,
+                        currentUser.displayName || currentUser.username || currentUser.email,
                         18
                       )}
                     </h5>
-                    <Button className="btn btn-danger text-white" onClick={handleSignOut}>
+                    <Button className="btn btn-danger text-white" onClick={handleLogout}>
                       Logout
                     </Button>
                   </>

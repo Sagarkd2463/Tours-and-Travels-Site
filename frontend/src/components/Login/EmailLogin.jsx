@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Container, Col, Row, Form, FormGroup, ButtonGroup } from 'reactstrap';
+import { Container, Col, Row, Form, FormGroup } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -54,7 +54,7 @@ const EmailPasswordLogin = () => {
                 },
             });
 
-            toast.success("Login successfull!!!");
+            toast.success("Login successfull....");
             navigate('/');
         } catch (error) {
             console.error("Login error:", error.message);
