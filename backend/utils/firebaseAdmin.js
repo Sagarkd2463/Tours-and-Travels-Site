@@ -5,7 +5,7 @@ const serviceAccount = {
     type: config.serviceFirebase.type,
     project_id: config.serviceFirebase.project_id,
     private_key_id: config.serviceFirebase.private_key_id,
-    private_key: config.serviceFirebase.private_key,
+    private_key: config.serviceFirebase.private_key.replace(/\\n/g, '\n'),
     client_email: config.serviceFirebase.client_email,
     client_id: config.serviceFirebase.client_id,
     auth_uri: config.serviceFirebase.auth_uri,

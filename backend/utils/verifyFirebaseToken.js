@@ -4,7 +4,7 @@ const verifyFirebaseToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.startsWith("Bearer ")
         ? authHeader.split(' ')[1]
-        : req.cookies?.accessToken;
+        : req.cookies?.access_Token;
 
     if (!token) {
         return res.status(401).json({ success: false, message: "You're not authorized!" });
@@ -20,15 +20,17 @@ const verifyFirebaseToken = async (req, res, next) => {
     }
 };
 
-const verifyFirebaseUser = (req, res, next) => {
-    verifyFirebaseToken(req, res, () => {
-        if (req.user && req.user?.uid || req.user?.email) {
+const verifyFirebaseUser = async (req, res, next) => {
+    await verifyFirebaseToken(req, res, () => {
+        if (req.user && (req.user.firebaseUid || req.user.email)) {
             next();
         } else {
-            return res.status(401).json({ success: false, message: "Authentication required: User validation failed!" });
+            return res.status(401).json({
+                success: false,
+                message: "Authentication required: User validation failed!",
+            });
         }
     });
 };
-
 
 module.exports = { verifyFirebaseToken, verifyFirebaseUser };

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../utils/config';
 import '../../styles/SingleBooking.css';
@@ -8,10 +8,11 @@ import axios from 'axios';
 
 const SingleBooking = () => {
     const { bookingId } = useParams();
-    const { user } = useContext(AuthFirebaseContext);
+    const { user, token } = useSelector((state) => state.Fuser);
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
@@ -21,15 +22,14 @@ const SingleBooking = () => {
 
         const fetchBookingDetails = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/booking/firebase-booking/${bookingId}?userId=${user.uid}`);
-                const data = await response.json();
-                if (response.ok) {
-                    setBooking(data.data); // Assuming your API returns the booking data here
-                } else {
-                    toast.error('Booking not found.');
-                }
+                const response = await axios.get(`${BASE_URL}/booking/firebase/booking/${bookingId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setBooking(response.data.data);
             } catch (err) {
-                toast.error(err.message);
+                toast.error(err.message || 'Booking not found.');
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -37,7 +37,7 @@ const SingleBooking = () => {
         };
 
         fetchBookingDetails();
-    }, [bookingId, user]);
+    }, [bookingId, user, token]);
 
     if (loading) {
         return (

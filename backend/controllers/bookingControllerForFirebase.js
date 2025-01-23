@@ -2,17 +2,32 @@ const Booking = require('../models/Booking');
 
 const createBookingForFirebase = async (req, res) => {
     try {
-        if (!req.user || !req.user.uid) {
+        if (!req.user || !req.user.firebaseUid) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
             });
         }
 
+        const { bookedAt } = req.body;
+
+        const parsedDate = bookedAt ? new Date(bookedAt) : null;
+        if (parsedDate && isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid 'bookedAt' date format!",
+            });
+        }
+
         const bookingData = {
-            ...req.body,
-            userId: req.user.uid, // Firebase UID
-            bookedAt: new Date(req.body.bookedAt), // Validate date if needed
+            userId: req.user.firebaseUid,
+            userEmail: req.user.email,
+            tourName: req.body.tourName,
+            fullName: req.body.fullName,
+            phone: req.body.phone,
+            guestSize: req.body.guestSize,
+            totalAmount: req.body.totalAmount,
+            bookedAt: parsedDate || new Date(),
         };
 
         const newBooking = new Booking(bookingData);
@@ -27,21 +42,20 @@ const createBookingForFirebase = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to book your tour!",
-            error: error.message,
         });
     }
 };
 
 const getAllBookingForFirebase = async (req, res) => {
     try {
-        if (!req.user || !req.user.uid) {
+        if (!req.user || !req.user.firebaseUid) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.uid });
+        const bookings = await Booking.find({ userId: req.user.firebaseUid });
 
         res.status(200).json({
             success: true,
@@ -51,7 +65,6 @@ const getAllBookingForFirebase = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to fetch bookings.",
-            error: error.message,
         });
     }
 };
@@ -75,7 +88,6 @@ const getBookingForFirebase = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to retrieve booking!",
-            error: error.message,
         });
     }
 };

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../utils/config';
 import '../../styles/UserBookings.css';
@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const FirebaseUserBookings = () => {
     const [bookings, setBookings] = useState([]);
-    const { user } = useContext(AuthFirebaseContext);
+    const { user, token } = useSelector((state) => state.Fuser);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,16 +19,19 @@ const FirebaseUserBookings = () => {
 
         const fetchBookings = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/booking/firebase-bookings?userId=${user.uid}`);
-                const data = await response.json();
-                setBookings(data.data || []);
+                const response = await axios.get(`${BASE_URL}/booking/firebase/user_bookings`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setBookings(response.data.data || []);
             } catch (err) {
                 toast.error('Error fetching bookings.');
             }
         };
 
         fetchBookings();
-    }, [user, navigate]);
+    }, [user, token, navigate]);
 
     return (
         <div className="container my-5">

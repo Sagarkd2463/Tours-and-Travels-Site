@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import '../../styles/Booking.css';
 import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
-import { AuthFirebaseContext } from '../../context/AuthFirebaseContext';
+import { useSelector } from 'react-redux';
 import { BASE_URL } from '../../utils/config';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -10,14 +10,16 @@ import axios from 'axios';
 const FirebaseBooking = ({ tour, avgRating }) => {
     const { price, reviews, title } = tour;
     const navigate = useNavigate();
-    const { user } = useContext(AuthFirebaseContext);
+    const { user, token } = useSelector((state) => state.Fuser);
 
     const [booking, setBooking] = useState({
-        userId: user ? user.uid : null, // Firebase UID
+        userId: user ? user.firebaseUid : null,
+        userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
         guestSize: 1,
+        totalAmount: 0,
         bookedAt: '',
     });
 
@@ -44,17 +46,13 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         }
 
         try {
-            const accessToken = localStorage.getItem('accessToken');
-
-            if (!accessToken) {
+            if (!token) {
                 throw new Error("Access token is missing. Please log in again.");
             }
 
-            await axios.post(`${BASE_URL}/booking/firebase-create`, {
-                ...booking,
-            }, {
+            await axios.post(`${BASE_URL}/booking/firebase/create`, booking, {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -86,6 +84,15 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             id='fullName'
                             onChange={handleChange}
                             required
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <input
+                            type="email"
+                            placeholder='Email'
+                            id='userEmail'
+                            value={booking.userEmail}
+                            onChange={handleChange}
                         />
                     </FormGroup>
                     <FormGroup>

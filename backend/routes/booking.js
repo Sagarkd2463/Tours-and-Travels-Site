@@ -13,8 +13,8 @@ router.get('/:id', verifyUser, getBookingForEmail);
 router.put('/:id', verifyUser, updateBookingForEmail);
 router.delete('/:id', verifyUser, deleteBookingForEmail);
 
-router.post('/firebase-create', verifyFirebaseUser, createBookingForFirebase);
-router.get('/firebase-bookings', verifyFirebaseUser, getAllBookingForFirebase);
-router.get('/firebase-booking/:id', verifyFirebaseUser, getBookingForFirebase);
+router.post('/firebase/create', verifyFirebaseUser, createBookingForFirebase);
+router.get('/firebase/user_bookings', verifyFirebaseUser, getAllBookingForFirebase);
+router.get('/firebase/booking/:id', verifyFirebaseUser, getBookingForFirebase);
 
 module.exports = router;
