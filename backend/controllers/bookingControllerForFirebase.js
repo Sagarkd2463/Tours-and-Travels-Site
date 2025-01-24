@@ -2,17 +2,17 @@ const Booking = require('../models/Booking');
 
 const createBookingForFirebase = async (req, res) => {
     try {
-        if (!req.user || !req.user.firebaseUid) {
+        if (!req.user || !req.user.uid) {
             return res.status(401).json({
                 success: false,
                 message: "Authentication required!",
             });
         }
 
-        const { bookedAt } = req.body;
+        const { bookedAt, tourName, fullName, phone, guestSize, totalAmount } = req.body;
 
-        const parsedDate = bookedAt ? new Date(bookedAt) : null;
-        if (parsedDate && isNaN(parsedDate.getTime())) {
+        const parsedDate = bookedAt ? new Date(bookedAt) : new Date();
+        if (isNaN(parsedDate.getTime())) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid 'bookedAt' date format!",
@@ -20,14 +20,14 @@ const createBookingForFirebase = async (req, res) => {
         }
 
         const bookingData = {
-            userId: req.user.firebaseUid,
-            userEmail: req.user.email,
-            tourName: req.body.tourName,
-            fullName: req.body.fullName,
-            phone: req.body.phone,
-            guestSize: req.body.guestSize,
-            totalAmount: req.body.totalAmount,
-            bookedAt: parsedDate || new Date(),
+            userId: req.user.uid,
+            userEmail: req.user.email || req.body.userEmail,
+            tourName,
+            fullName,
+            phone,
+            guestSize,
+            totalAmount,
+            bookedAt: parsedDate,
         };
 
         const newBooking = new Booking(bookingData);
@@ -48,14 +48,14 @@ const createBookingForFirebase = async (req, res) => {
 
 const getAllBookingForFirebase = async (req, res) => {
     try {
-        if (!req.user || !req.user.firebaseUid) {
+        if (!req.user || !req.user.uid) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized access. Please sign in to view your bookings.",
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.firebaseUid });
+        const bookings = await Booking.find({ userId: req.user.uid });
 
         res.status(200).json({
             success: true,

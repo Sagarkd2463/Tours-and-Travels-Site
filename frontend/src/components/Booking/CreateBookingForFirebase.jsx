@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../styles/Booking.css';
 import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
@@ -13,108 +13,122 @@ const FirebaseBooking = ({ tour, avgRating }) => {
     const { user, token } = useSelector((state) => state.Fuser);
 
     const [booking, setBooking] = useState({
-        userId: user ? user.firebaseUid : null,
+        userId: user ? user.uid : null,
         userEmail: user ? user.email : '',
         tourName: title,
         fullName: '',
         phone: '',
         guestSize: 1,
-        totalAmount: 0,
+        totalAmount: price + 10, // Base price + service fee
         bookedAt: '',
     });
 
-    const handleChange = (e) => {
-        const { id, value, type } = e.target;
+    // Calculate totalAmount whenever guestSize changes
+    useEffect(() => {
         setBooking((prev) => ({
             ...prev,
-            [id]: type === "date" ? new Date(value).toISOString() : value,
+            totalAmount: Number(price) * Number(prev.guestSize) + 10,
+        }));
+    }, [price, booking.guestSize]);
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setBooking((prev) => ({
+            ...prev,
+            [id]: id === 'guestSize' || id === 'phone' ? Number(value) : value,
         }));
     };
-
-    const serviceFee = 10;
-    const totalAmount = Number(price) * Number(booking.guestSize) + serviceFee;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!user) {
-            return toast.error("Please sign in to make a booking.");
+            return toast.error('Please sign in to make a booking.');
+        }
+
+        if (!token) {
+            return toast.error('Access token is missing. Please log in again.');
         }
 
         if (!booking.bookedAt || isNaN(new Date(booking.bookedAt).getTime())) {
-            return toast.error("Please select a valid date!");
+            return toast.error('Please select a valid date!');
         }
 
         try {
-            if (!token) {
-                throw new Error("Access token is missing. Please log in again.");
-            }
+            await axios.post(
+                `${BASE_URL}/booking/firebase/create`,
+                { ...booking },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
-            await axios.post(`${BASE_URL}/booking/firebase/create`, booking, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            toast.success("Booking successful! Redirecting...");
+            toast.success('Booking successful! Redirecting...');
             setTimeout(() => navigate('/thank-you'), 1000);
         } catch (error) {
-            console.error("Booking Error:", error);
-            toast.error(error.message || "An error occurred while making the booking.");
+            console.error('Booking Error:', error);
+            toast.error(error.response?.data?.message || 'An error occurred while making the booking.');
         }
     };
 
     return (
         <div className='booking'>
-            <div className="booking__top d-flex align-items-center justify-content-between">
-                <h3>Rs. {price} <span>/per person</span></h3>
-                <span className="tour__rating d-flex align-items-center">
-                    <i className="ri-star-fill"></i>
+            <div className='booking__top d-flex align-items-center justify-content-between'>
+                <h3>
+                    Rs. {price} <span>/per person</span>
+                </h3>
+                <span className='tour__rating d-flex align-items-center'>
+                    <i className='ri-star-fill'></i>
                     {avgRating || 0} ({reviews?.length || 0})
                 </span>
             </div>
 
-            <div className="booking__form">
+            <div className='booking__form'>
                 <h5>Information</h5>
                 <Form onSubmit={handleSubmit}>
                     <FormGroup>
                         <input
-                            type="text"
+                            type='text'
                             placeholder='Full Name'
                             id='fullName'
+                            value={booking.fullName}
                             onChange={handleChange}
                             required
                         />
                     </FormGroup>
                     <FormGroup>
                         <input
-                            type="email"
+                            type='email'
                             placeholder='Email'
                             id='userEmail'
                             value={booking.userEmail}
-                            onChange={handleChange}
+                            readOnly
                         />
                     </FormGroup>
                     <FormGroup>
                         <input
-                            type="number"
+                            type='number'
                             placeholder='Phone'
                             id='phone'
+                            value={booking.phone}
                             onChange={handleChange}
                             required
                         />
                     </FormGroup>
                     <FormGroup className='d-flex align-items-center gap-3'>
                         <input
-                            type="date"
+                            type='date'
                             id='bookedAt'
                             onChange={handleChange}
                             required
                         />
                         <input
-                            type="number"
+                            type='number'
                             placeholder='Guests'
                             id='guestSize'
+                            value={booking.guestSize}
                             onChange={handleChange}
                             required
                         />
@@ -122,7 +136,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                 </Form>
             </div>
 
-            <div className="booking__bottom">
+            <div className='booking__bottom'>
                 <ListGroup>
                     <ListGroupItem className='border-0 px-0'>
                         <h5 className='d-flex align-items-center gap-1'>
@@ -132,11 +146,11 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0'>
                         <h5>Service Fee</h5>
-                        <span>Rs. {serviceFee}</span>
+                        <span>Rs. 10</span>
                     </ListGroupItem>
                     <ListGroupItem className='border-0 px-0 total'>
                         <h5>Total</h5>
-                        <span>Rs. {totalAmount}</span>
+                        <span>Rs. {booking.totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
                 <Button className='btn primary__btn w-100 mt-4' onClick={handleSubmit}>
