@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    user: JSON.parse(localStorage.getItem('Fuser')) || null,
-    token: localStorage.getItem('access_Token') || null,
+    user: null,
+    token: null,
 };
 
 const firebaseAuthSlice = createSlice({
@@ -13,14 +13,10 @@ const firebaseAuthSlice = createSlice({
             const { user, token } = action.payload;
             state.user = user;
             state.token = token;
-            localStorage.setItem('Fuser', JSON.stringify(user));
-            localStorage.setItem('access_Token', token);
         },
         logout: (state) => {
             state.user = null;
             state.token = null;
-            localStorage.removeItem('Fuser');
-            localStorage.removeItem('access_Token');
         },
     },
 });

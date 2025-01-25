@@ -9,7 +9,7 @@ const createBookingForFirebase = async (req, res) => {
             });
         }
 
-        const { bookedAt, tourName, fullName, phone, guestSize, totalAmount } = req.body;
+        const { bookedAt, tourName, fullName, phone, guestSize, totalAmount, userEmail } = req.body;
 
         const parsedDate = bookedAt ? new Date(bookedAt) : new Date();
         if (isNaN(parsedDate.getTime())) {
@@ -21,7 +21,7 @@ const createBookingForFirebase = async (req, res) => {
 
         const bookingData = {
             userId: req.user.uid,
-            userEmail: req.user.email || req.body.userEmail,
+            userEmail: userEmail || req.user.email,
             tourName,
             fullName,
             phone,
