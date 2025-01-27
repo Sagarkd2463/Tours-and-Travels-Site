@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { BASE_URL } from '../../utils/config';
 
 const FirebaseBooking = ({ tour, avgRating }) => {
@@ -10,13 +11,13 @@ const FirebaseBooking = ({ tour, avgRating }) => {
     const navigate = useNavigate();
 
     const [booking, setBooking] = useState({
-        userId: user ? user.uid : null,
-        userEmail: user ? user.email : '',
+        userId: user?.uid || '',
+        userEmail: user?.email || '',
         tourName: tour?.title || '',
         fullName: '',
         phone: '',
         guestSize: 1,
-        totalAmount: (tour?.price || 0) + 10,
+        totalAmount: 0,
         bookedAt: '',
     });
 
@@ -53,7 +54,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         }
 
         try {
-            await axios.post(
+            const response = await axios.post(
                 `${BASE_URL}/booking/firebase/create`,
                 booking,
                 {
@@ -63,8 +64,12 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                 }
             );
 
-            toast.success('Booking successful!');
-            navigate('/thank-you');
+            if (response.data.success) {
+                toast.success('Booking successful!');
+                navigate('/thank-you');
+            } else {
+                throw new Error(response.data.message || 'Failed to book your tour.');
+            }
         } catch (error) {
             console.error('Booking Error:', error);
             toast.error(error.response?.data?.message || 'Failed to book your tour.');
@@ -75,17 +80,17 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         <div className="booking">
             <div className="booking__top d-flex align-items-center justify-content-between">
                 <h3>
-                    Rs. {price} <span>/per person</span>
+                    Rs. {tour?.price} <span>/per person</span>
                 </h3>
                 <span className="tour__rating d-flex align-items-center">
                     <i className="ri-star-fill"></i>
-                    {avgRating || 0} ({reviews?.length || 0})
+                    {avgRating || 0} ({tour?.reviews?.length || 0})
                 </span>
             </div>
 
             <div className="booking__form">
                 <h5>Information</h5>
-                <Form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <FormGroup>
                         <input
                             type="text"
@@ -102,6 +107,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             placeholder="Email"
                             id="userEmail"
                             value={booking.userEmail}
+                            onChange={handleChange}
                             readOnly
                         />
                     </FormGroup>
@@ -119,6 +125,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                         <input
                             type="date"
                             id="bookedAt"
+                            value={booking.bookedAt}
                             onChange={handleChange}
                             required
                         />
@@ -131,16 +138,19 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             required
                         />
                     </FormGroup>
-                </Form>
+                    <Button className="btn primary__btn w-100 mt-4" type="submit">
+                        Book Now
+                    </Button>
+                </form>
             </div>
 
             <div className="booking__bottom">
                 <ListGroup>
                     <ListGroupItem className="border-0 px-0">
                         <h5 className="d-flex align-items-center gap-1">
-                            Rs. {price} <i className="ri-close-line"></i> {booking.guestSize} person(s)
+                            Rs. {tour?.price} <i className="ri-close-line"></i> {booking.guestSize} person(s)
                         </h5>
-                        <span>Rs. {price * booking.guestSize}</span>
+                        <span>Rs. {tour?.price * booking.guestSize}</span>
                     </ListGroupItem>
                     <ListGroupItem className="border-0 px-0">
                         <h5>Service Fee</h5>
@@ -151,9 +161,6 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                         <span>Rs. {booking.totalAmount}</span>
                     </ListGroupItem>
                 </ListGroup>
-                <Button className="btn primary__btn w-100 mt-4" onClick={handleSubmit}>
-                    Book Now
-                </Button>
             </div>
         </div>
     );

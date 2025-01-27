@@ -1,21 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import firebaseAuthReducer from './firebaseAuthSlice';
 
-// Redux-Persist configuration
 const persistConfig = {
     key: 'root',
-    storage,     
-    whitelist: ['Fuser'], 
+    storage,
+    whitelist: ['Fuser'],
+    version: 1,
 };
 
-const persistedReducer = persistReducer(persistConfig, firebaseAuthReducer);
+const rootReducer = combineReducers({
+    Fuser: firebaseAuthReducer,
+});
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Create the Redux store
 const store = configureStore({
-    reducer: {
-        Fuser: persistedReducer,
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: false,
@@ -23,4 +26,5 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
 export default store;

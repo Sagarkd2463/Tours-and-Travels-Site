@@ -6,7 +6,7 @@ import { BASE_URL } from '../../utils/config';
 import '../../styles/SingleBooking.css';
 import axios from 'axios';
 
-const SingleBooking = () => {
+const FirebaseSingleBooking = () => {
     const { bookingId } = useParams();
     const { user, token } = useSelector((state) => state.Fuser);
     const [booking, setBooking] = useState(null);
@@ -88,4 +88,4 @@ const SingleBooking = () => {
     );
 };
 
-export default SingleBooking;
+export default FirebaseSingleBooking;

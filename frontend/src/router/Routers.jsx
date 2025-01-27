@@ -10,6 +10,8 @@ import ThankYou from '../pages/ThankYou';
 import UserBookings from '../components/Booking/UserBookingsForEmail';
 import SingleBooking from '../components/Booking/SingleBookingForEmail';
 import About from '../pages/About';
+import FirebaseSingleBooking from '../components/Booking/SingleBookingForFirebase';
+import FirebaseUserBookings from '../components/Booking/UserBookingsForFirebase';
 
 const Routers = () => {
     return (
@@ -25,6 +27,8 @@ const Routers = () => {
             <Route path='/thank-you' element={<ThankYou />} />
             <Route path="/bookings" element={<UserBookings />} />
             <Route path="/booking/:id" element={<SingleBooking />} />
+            <Route path="/bookings/firebase" element={<FirebaseUserBookings />} />
+            <Route path="/bookings/firebase/:id" element={<FirebaseSingleBooking />} />
         </Routes>
     );
 };
