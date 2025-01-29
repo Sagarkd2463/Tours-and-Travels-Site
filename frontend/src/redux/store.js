@@ -16,7 +16,6 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Create the Redux store
 const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>

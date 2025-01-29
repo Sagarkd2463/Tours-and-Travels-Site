@@ -25,10 +25,21 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         if (tour?.price) {
             setBooking((prev) => ({
                 ...prev,
-                totalAmount: Number(tour.price) * booking.guestSize + 10,
+                totalAmount: Number(tour.price) * prev.guestSize + 10,
             }));
         }
     }, [booking.guestSize, tour?.price]);
+
+    useEffect(() => {
+        if (user) {
+            console.log("User Data in Booking:", user);
+            setBooking((prev) => ({
+                ...prev,
+                userId: user.uid,
+                userEmail: user.email,
+            }));
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -42,15 +53,19 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         e.preventDefault();
 
         if (!user) {
-            return toast.error('Please sign in to make a booking.');
+            <p className='text-center text-primary fs-5'>Loading user data... Please sign in.</p>
+            toast.error('Please sign in to make a booking.');
+            return;
         }
 
         if (!token) {
-            return toast.error('Access token is missing. Please log in again.');
+            toast.error('Access token is missing. Please log in again.');
+            return;
         }
 
         if (!booking.bookedAt || isNaN(new Date(booking.bookedAt).getTime())) {
-            return toast.error('Please select a valid date!');
+            toast.error('Please select a valid date!');
+            return;
         }
 
         try {
