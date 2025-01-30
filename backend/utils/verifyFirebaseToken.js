@@ -22,12 +22,12 @@ const verifyFirebaseToken = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error("Error verifying Firebase token:", error.message);
+        console.error("Error verifying Firebase token:", error);
 
-        const isExpired = error.code === 'auth/id-token-expired';
-        const errorMessage = isExpired
-            ? "Firebase token has expired. Please log in again."
-            : "Invalid Firebase token. Authentication failed.";
+        let errorMessage = "Invalid Firebase token. Authentication failed."
+        if (error.code === 'auth/id-token-expired') {
+            errorMessage = "Firebase token has expired. Please log in again.";
+        }
 
         return res.status(403).json({
             success: false,

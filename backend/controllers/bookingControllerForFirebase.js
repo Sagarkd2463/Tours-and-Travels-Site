@@ -20,8 +20,8 @@ const createBookingForFirebase = async (req, res) => {
         }
 
         const bookingData = {
-            userId: req.user.uid,
-            userEmail: userEmail || req.user.email,
+            firebaseUid: req.user.uid, // Using firebaseUid for Firebase users
+            userEmail: userEmail || req.user.email, // Ensure email is populated
             tourName,
             fullName,
             phone,
@@ -39,6 +39,7 @@ const createBookingForFirebase = async (req, res) => {
             data: savedBooking,
         });
     } catch (error) {
+        console.error("Error creating booking:", error);
         res.status(500).json({
             success: false,
             message: "Failed to book your tour!",
@@ -55,13 +56,14 @@ const getAllBookingForFirebase = async (req, res) => {
             });
         }
 
-        const bookings = await Booking.find({ userId: req.user.uid });
+        const bookings = await Booking.find({ firebaseUid: req.user.uid });
 
         res.status(200).json({
             success: true,
             data: bookings,
         });
     } catch (error) {
+        console.error("Error fetching bookings:", error);
         res.status(500).json({
             success: false,
             message: "Failed to fetch bookings.",
@@ -85,6 +87,7 @@ const getBookingForFirebase = async (req, res) => {
             data: booking,
         });
     } catch (error) {
+        console.error("Error retrieving booking:", error);
         res.status(500).json({
             success: false,
             message: "Failed to retrieve booking!",

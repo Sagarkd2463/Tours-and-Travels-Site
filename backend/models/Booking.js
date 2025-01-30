@@ -39,10 +39,6 @@ const bookingSchema = new mongoose.Schema(
         bookedAt: {
             type: Date,
             required: true,
-            validate: {
-                validator: (value) => !isNaN(Date.parse(value)),
-                message: "Invalid date format",
-            },
         },
     },
     { timestamps: true }

@@ -11,7 +11,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
     const navigate = useNavigate();
 
     const [booking, setBooking] = useState({
-        userId: user?.uid || '',
+        firebaseUid: user?.uid || '',
         userEmail: user?.email || '',
         tourName: tour?.title || '',
         fullName: '',
@@ -28,14 +28,14 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                 totalAmount: Number(tour.price) * prev.guestSize + 10,
             }));
         }
-    }, [booking.guestSize, tour?.price]);
+    }, [tour?.price, booking.guestSize]);
 
     useEffect(() => {
         if (user) {
             console.log("User Data in Booking:", user);
             setBooking((prev) => ({
                 ...prev,
-                userId: user.uid,
+                firebaseUid: user.uid,
                 userEmail: user.email,
             }));
         }
@@ -53,7 +53,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         e.preventDefault();
 
         if (!user) {
-            <p className='text-center text-primary fs-5'>Loading user data... Please sign in.</p>
+            console.log("User is not signed in. Cannot proceed with booking.");
             toast.error('Please sign in to make a booking.');
             return;
         }
@@ -122,7 +122,6 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             placeholder="Email"
                             id="userEmail"
                             value={booking.userEmail}
-                            onChange={handleChange}
                             readOnly
                         />
                     </FormGroup>
@@ -153,9 +152,16 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             required
                         />
                     </FormGroup>
-                    <Button className="btn primary__btn w-100 mt-4" type="submit">
-                        Book Now
-                    </Button>
+
+                    {user ? (
+                        <Button className="btn primary__btn w-100 mt-4" type="submit">
+                            Book Now
+                        </Button>
+                    ) : (
+                        <p className="text-center text-danger mt-3">
+                            Please <a href="/login">sign in</a> to book a tour.
+                        </p>
+                    )}
                 </form>
             </div>
 

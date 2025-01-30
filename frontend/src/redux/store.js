@@ -6,7 +6,6 @@ import firebaseAuthReducer from './firebaseAuthSlice';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['Fuser'],
     version: 1,
 };
 
