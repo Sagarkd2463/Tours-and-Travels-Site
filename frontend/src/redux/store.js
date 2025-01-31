@@ -6,7 +6,7 @@ import firebaseAuthReducer from './firebaseAuthSlice';
 const persistConfig = {
     key: 'root',
     storage,
-    version: 1,
+    version: 1
 };
 
 const rootReducer = combineReducers({

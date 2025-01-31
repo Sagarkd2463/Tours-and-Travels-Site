@@ -53,7 +53,7 @@ const FirebaseBooking = ({ tour, avgRating }) => {
         e.preventDefault();
 
         if (!user) {
-            console.log("User is not signed in. Cannot proceed with booking.");
+            console.log("Current User from Redux:", user);
             toast.error('Please sign in to make a booking.');
             return;
         }
@@ -152,16 +152,9 @@ const FirebaseBooking = ({ tour, avgRating }) => {
                             required
                         />
                     </FormGroup>
-
-                    {user ? (
-                        <Button className="btn primary__btn w-100 mt-4" type="submit">
-                            Book Now
-                        </Button>
-                    ) : (
-                        <p className="text-center text-danger mt-3">
-                            Please <a href="/login">sign in</a> to book a tour.
-                        </p>
-                    )}
+                    <Button className="btn primary__btn w-100 mt-4" type="submit">
+                        Book Now
+                    </Button>
                 </form>
             </div>
 

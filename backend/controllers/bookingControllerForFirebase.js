@@ -20,8 +20,8 @@ const createBookingForFirebase = async (req, res) => {
         }
 
         const bookingData = {
-            firebaseUid: req.user.uid, // Using firebaseUid for Firebase users
-            userEmail: userEmail || req.user.email, // Ensure email is populated
+            firebaseUid: req.user.uid,
+            userEmail: userEmail || req.user.email,
             tourName,
             fullName,
             phone,
