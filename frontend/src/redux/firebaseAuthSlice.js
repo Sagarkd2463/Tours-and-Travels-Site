@@ -18,8 +18,11 @@ const firebaseAuthSlice = createSlice({
             state.user = null;
             state.token = null;
         },
+        updateToken: (state, action) => {
+            state.token = action.payload;
+        }
     },
 });
 
-export const { loginSuccess, logout } = firebaseAuthSlice.actions;
+export const { loginSuccess, logout, updateToken } = firebaseAuthSlice.actions;
 export default firebaseAuthSlice.reducer;

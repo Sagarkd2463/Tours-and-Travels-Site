@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { BASE_URL } from '../../utils/config';
+import '../../styles/Booking.css';
 
 const FirebaseBooking = ({ tour, avgRating }) => {
     const { user, token } = useSelector((state) => state.Fuser);
@@ -52,14 +53,9 @@ const FirebaseBooking = ({ tour, avgRating }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!user) {
-            console.log("Current User from Redux:", user);
-            toast.error('Please sign in to make a booking.');
-            return;
-        }
-
-        if (!token) {
-            toast.error('Access token is missing. Please log in again.');
+        if (!user || !token) {
+            console.log("User or Token missing:", { user, token });
+            toast.error('Authentication failed. Please sign in again.');
             return;
         }
 

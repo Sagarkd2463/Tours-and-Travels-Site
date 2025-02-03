@@ -11,15 +11,20 @@ const verifyFirebaseToken = async (req, res, next) => {
             });
         }
 
-        // Extract the token
         const token = authHeader.split(' ')[1];
 
         // Verify the token using Firebase Admin SDK
         const decodedToken = await admin.auth().verifyIdToken(token);
 
-        // Attach user data to the request object
-        req.user = decodedToken;
+        // If the token is expired, reject the request
+        if (!decodedToken || !decodedToken.uid) {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid Firebase token. Please log in again.",
+            });
+        }
 
+        req.user = decodedToken;
         next();
     } catch (error) {
         console.error("Error verifying Firebase token:", error);
@@ -38,7 +43,7 @@ const verifyFirebaseToken = async (req, res, next) => {
 
 const verifyFirebaseUser = (req, res, next) => {
     verifyFirebaseToken(req, res, () => {
-        if (req.user && (req.user.uid || req.user.email)) {
+        if (req.user && req.user.uid) {
             next();
         } else {
             return res.status(401).json({
